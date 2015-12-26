@@ -105,9 +105,9 @@ def playepisode(episodeid):
     downloadflag = 0
     
     try:
-        url = 'http://il.srf.ch/integrationlayer/1.0/ue/srf/video/detail/'+episodeid+'.json'
+        url = 'http://il.srf.ch/integrationlayer/1.0/ue/srf/video/play/'+episodeid+'.json'
         response = json.load(open_srf_url(url))
-        urls =  response["Video"]["Playlists"]['Playlist'][0]['url']
+        urls =  response["Video"]["Playlists"]['Playlist'][@protocol='HTTP-HDS']['url']
         besturl = ''
         if urls.__len__() > 1:
             for tempurl in urls:
