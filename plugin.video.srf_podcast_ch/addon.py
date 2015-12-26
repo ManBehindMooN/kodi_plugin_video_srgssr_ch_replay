@@ -32,6 +32,7 @@ FavoritesFile = xbmc.translatePath("special://profile/addon_data/"+addonID+"/"+a
 showSubtitles = addon.getSetting("showSubtitles") == "true"
 forceViewMode = addon.getSetting("forceView") == "true"
 viewModeShows = str(addon.getSetting("viewIDShows"))
+numberOfEpisodesPerPage = str(addon.getSetting("numberOfShowsPerPage"))
 
 #'this method list all TV shows from SRF when SRF-Podcast was selected in the main menu'
 def listTvShows():
@@ -65,7 +66,7 @@ def listTvShows():
 
 #'this method list all episodes of the selected show'
 def listEpisodes(showid,showbackground,page):
-	url = 'http://il.srf.ch/integrationlayer/1.0/ue/srf/assetSet/listByAssetGroup/'+showid+'.json?pageNumber='+str(page)
+	url = 'http://il.srf.ch/integrationlayer/1.0/ue/srf/assetSet/listByAssetGroup/'+showid+'.json?pageNumber='+str(page)+"&pageSize="+str(numberOfEpisodesPerPage)
 	response = json.load(open_srf_url(url))
 	maxpage = response["AssetSets"]["@maxPageNumber"]
 	show =  response["AssetSets"]["AssetSet"]
