@@ -110,7 +110,7 @@ def listEpisodes(channel,showid,showbackground,page):
 	maxpage = int(maxpage)
 	if page < maxpage:
 		page = page + 1
-		addnextpage('Show older episodes of this show..', showid, 'listEpisodes', '', showbackground,page,channel)
+		addnextpage(self.Addon.getLocalizedString(33001), showid, 'listEpisodes', '', showbackground,page,channel)
 	
 	xbmcplugin.endOfDirectory(pluginhandle)
 	if forceViewMode:
