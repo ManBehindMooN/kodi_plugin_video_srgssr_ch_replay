@@ -2,10 +2,6 @@
 <addon id="plugin.video.srf_podcast_ch" name="SRF Podcast Plugin" version="1.2.2" provider-name="Christian Rueedi">
   <requires>
     <import addon="xbmc.python" version="2.20.0"/>
-	<import addon="xbmc.gui" version="5.9.0"/>
-	<import addon="xbmc.json" version="6.25.1"/>
-	<import addon="xbmc.metadata" version="2.1.0"/>
-	<import addon="xbmc.addon" version="15.0.0"/>
 	<import addon="script.module.elementtree"   version="1.2.7"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
