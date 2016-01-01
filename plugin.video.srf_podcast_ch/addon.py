@@ -110,7 +110,7 @@ def listEpisodes(channel,showid,showbackground,page):
 	maxpage = int(maxpage)
 	if page < maxpage:
 		page = page + 1
-		addnextpage('Show older episodes of this show..', showid, 'listEpisodes', '', '',page,channel)
+		addnextpage('Show older episodes of this show..', showid, 'listEpisodes', '', showbackground,page,channel)
 	
 	xbmcplugin.endOfDirectory(pluginhandle)
 	if forceViewMode:
@@ -171,38 +171,36 @@ def addShow(name, url, mode, desc, iconimage,page,channel):
     liz.setIconImage("DefaultFolder.png")
     liz.setThumbnailImage(iconimage)
     liz.setLabel2(desc)
-    liz.setArt({'poster' : iconimage , 'banner' : iconimage, 'fanart' : iconimage, 'clearart' : iconimage, 'clearlogo' : iconimage, 'landscape' : iconimage})
+    liz.setArt({'poster' : iconimage , 'banner' : iconimage, 'fanart' : iconimage, 'thumb' : iconimage})
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
     xbmcplugin.setContent(pluginhandle, 'tvshows')
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
     return ok
 
 	#'helper method to create a folder with subitems'
-def addnextpage(name, url, mode, desc, iconimage,page,channel):
-    ok = True
-    directoryurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&showbackground="+urllib.quote_plus(iconimage)+"&page="+str(page)+"&channel="+str(channel)
-    liz = xbmcgui.ListItem(name)
-    #liz.setIconImage("DefaultFolder.png")
-    #liz.setThumbnailImage(iconimage)
-    liz.setLabel2(desc)
-    #liz.setArt({'poster' : iconimage , 'banner' : iconimage, 'fanart' : iconimage, 'clearart' : iconimage, 'clearlogo' : iconimage, 'landscape' : iconimage})
-    liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
-    xbmcplugin.setContent(pluginhandle, 'tvshows')
-    ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
-    return ok
+def addnextpage(name, url, mode, desc, showbackground,page,channel):
+	ok = True
+	directoryurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&showbackground="+urllib.quote_plus(showbackground)+"&page="+str(page)+"&channel="+str(channel)
+	liz = xbmcgui.ListItem(name)
+	liz.setLabel2(desc)
+	#liz.setArt({'poster' : '' , 'banner' : '', 'fanart' : showbackground, 'thumb' : ''})
+	liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
+	xbmcplugin.setContent(pluginhandle, 'episodes')
+	ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
+	return ok
     
 #'helper method to create an item in the list'
 def addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground,channel):
 	ok = True
 	linkurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&channel="+str(channel)
 	liz = xbmcgui.ListItem(name)
-	liz.setIconImage("DefaultFolder.png")
+	liz.setIconImage('')
 	liz.setThumbnailImage(iconurl)
 	liz.setLabel2(desc)
-	liz.setArt({'poster' : iconurl , 'banner' : iconurl, 'fanart' : showbackground, 'clearart' : iconurl, 'clearlogo' : iconurl, 'landscape' : showbackground})
+	liz.setArt({'poster' : iconurl , 'banner' : iconurl, 'fanart' : showbackground, 'thumb' : iconurl})
 	liz.setInfo(type='Video', infoLabels={"Title": name, "Duration": length, "Plot": desc, "Aired" : pubdate})
 	liz.setProperty('IsPlayable', 'true')
-	xbmcplugin.setContent(pluginhandle,"episodes")
+	xbmcplugin.setContent(pluginhandle,'episodes')
 	ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=linkurl, listitem=liz)
 	return ok
 
