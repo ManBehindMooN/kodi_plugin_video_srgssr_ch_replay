@@ -1,3 +1,6 @@
+[B]v1.3.1[/B]
+- Fixed smaller issues in the previous version.
+
 [B]v1.2.2[/B]
 - Added other Swiss Channels: RTS, RSI and RTR
 - You can now scroll to older episodes of a show
