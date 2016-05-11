@@ -76,7 +76,12 @@ def listTvShows(channel):
 def listEpisodes(channel,showid,showbackground,page):
 	url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/assetSet/listByAssetGroup/'+showid+'.json?pageNumber='+str(page)+"&pageSize="+str(numberOfEpisodesPerPage)
 	response = json.load(open_srf_url(url))
-	maxpage = response["AssetSets"]["@maxPageNumber"]
+	maxpage = 1
+	try:
+		maxpage = response["AssetSets"]["@maxPageNumber"]
+	except:
+		maxpage = 1
+
 	show =  response["AssetSets"]["AssetSet"]
 		
 	for episode in show:
@@ -103,14 +108,19 @@ def listEpisodes(channel,showid,showbackground,page):
 			url = episode['Assets']['Video'][0]['id']
 		except:
 			url = 'no url'
-		addLink(title, url, 'playepisode', desc, picture, length, pubdate,showbackground,channel)
+		try:
+			titleextended = ' - ' + episode['Assets']['Video'][0]['AssetMetadatas']['AssetMetadata'][0]['title']
+		except:
+			titleextended = ''
+	
+		addLink(title+titleextended, url, 'playepisode', desc, picture, length, pubdate,showbackground,channel)
 
 	# check if another page is available
 	page = int(page)
 	maxpage = int(maxpage)
 	if page < maxpage:
 		page = page + 1
-		addnextpage(addon.getLocalizedString(33001), showid, 'listEpisodes', '', showbackground,page,channel)
+		addnextpage(addon.getLocalizedString(33001).format(page,maxpage), showid, 'listEpisodes', '', showbackground,page,channel)
 	
 	xbmcplugin.endOfDirectory(pluginhandle)
 	if forceViewMode:

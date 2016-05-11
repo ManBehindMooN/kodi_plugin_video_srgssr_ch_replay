@@ -9,5 +9,5 @@
   <string id="30102">ViewID für Videos</string>
   <string id="30106">ViewID für Show Liste</string>
   <string id="30107">Abzahl Episodes pro Seite anzeigen</string>
-  <string id="33001">&#196;ltere Folgen dieser Sendung anzeigen..</string>
+  <string id="33001">&#196;ltere Folgen dieser Sendung anzeigen.. Seite ({0} von {1})</string>
 </strings>

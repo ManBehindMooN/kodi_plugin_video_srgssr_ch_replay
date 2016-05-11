@@ -9,5 +9,5 @@
   <string id="30102">ViewID for Videos</string>
   <string id="30106">ViewID for Show List</string>
   <string id="30107">Number of episodes shown per page</string>
-  <string id="33001">Show older episodes of this show..</string>
+  <string id="33001">Show older episodes of this show.. page ({0} of {1})</string>
 </strings>
