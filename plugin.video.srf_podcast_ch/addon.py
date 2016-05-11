@@ -139,7 +139,7 @@ def playepisode(channel,episodeid):
 	if downloadflag == 0:
 		try:
 			url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/video/play/'+episodeid+'.json'
-			response = json.load(urllib2.urlopen(url))
+			response = json.load(open_srf_url(url))
 			urls =  response["Video"]["Playlists"]['Playlist'][1]['url']
 			besturl = ''
 			if urls.__len__() > 1:
@@ -224,7 +224,7 @@ def open_srf_url(urlstring):
         if response.info().get('Content-Encoding') == 'gzip': 
             buf = StringIO( response.read()) 
             f = gzip.GzipFile(fileobj=buf) 
-            response = f.read()
+            response = StringIO(f.read())
     except Exception as e:
         print traceback.format_exc()
         dialog = xbmcgui.Dialog().ok('xStream Error',str(e.__class__.__name__),str(e))
