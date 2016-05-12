@@ -36,12 +36,20 @@ numberOfEpisodesPerPage = str(addon.getSetting("numberOfShowsPerPage"))
 
 #'this method list all SRF-channel when SRF-Podcast was selected in the main menu'
 def chooseChannel():
-    addChannel('srf', 'SRF', 'listTvShows')
-    addChannel('rts', 'RTS', 'listTvShows')
-    addChannel('rsi', 'RSI', 'listTvShows')
-    addChannel('rtr', 'RTR', 'listTvShows')
+    addChannel('srf', 'SRF', 'chooseOptions')
+    addChannel('rts', 'RTS', 'chooseOptions')
+    addChannel('rsi', 'RSI', 'chooseOptions')
+    addChannel('rtr', 'RTR', 'chooseOptions')
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
+def chooseOptions(channel):
+	addOption('dummy','Alle Shows', 'listTvShows',channel)
+	addOption('dummy','Neuste Videos', 'newestTvShows',channel)
+	addOption('dummy','Meist Geklickt', 'mostClickedTvShows',channel)
+	addOption('dummy','Empfohlen', 'recommendedTvShows',channel)
+	addOption('dummy','Live', 'liveTvShows',channel)
+	xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
+	
 #'this method list all TV shows from SRF when SRF-Podcast was selected in the main menu'
 def listTvShows(channel):
 	url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/tv/assetGroup/editorialPlayerAlphabetical.json'
@@ -72,6 +80,45 @@ def listTvShows(channel):
 	if forceViewMode:
 		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
 
+#'this method list all TV shows from SRF when SRF-Podcast was selected in the main menu'
+def recommendedTvShows(channel):
+	url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/video/editorialPlayerPicks.json'
+	response = json.load(open_srf_url(url))
+	
+	videos =  response["Videos"]["Video"]
+	title = ''
+	desc = ''
+	picture = ''
+	page = 1
+	mode = 'playepisode'
+	for video in videos:
+		try:
+			title = video['AssetMetadatas']['AssetMetadata'][0]['title']
+		except:
+			title = 'No Title'
+		try:
+			desc = video['AssetMetadatas']['AssetMetadata'][0]['description']
+		except:
+			desc = 'No Description'
+		try:
+			picture = video['Image']['ImageRepresentations']['ImageRepresentation'][0]['url']
+		except:
+			picture = ''
+		try:
+			length = int(video['duration']) / 1000 / 60
+		except:
+			length = 0
+		try:
+			pubdate = video['AssetSet']['publishedDate']
+		except:
+			pubdate = ''		
+		addLink(title, video['id'], 'playepisode', desc, picture, length, pubdate,showbackground,channel)
+		
+	xbmcplugin.addSortMethod(pluginhandle,1)
+	xbmcplugin.endOfDirectory(pluginhandle)
+	if forceViewMode:
+		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
+		
 #'this method list all episodes of the selected show'
 def listEpisodes(channel,showid,showbackground,page):
 	url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/assetSet/listByAssetGroup/'+showid+'.json?pageNumber='+str(page)+"&pageSize="+str(numberOfEpisodesPerPage)
@@ -173,6 +220,13 @@ def addChannel(id, name, mode):
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
     return ok
 	
+def addOption(url, name, mode,channel):
+    ok = True
+    directoryurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&channel="+str(channel)
+    liz = xbmcgui.ListItem(name)
+    ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
+    return ok
+	
 #'helper method to create a folder with subitems'
 def addShow(name, url, mode, desc, iconimage,page,channel):
     ok = True
@@ -256,6 +310,10 @@ page = params.get('page', '')
 
 if mode == 'chooseChannel':
     chooseChannel()
+elif mode == 'chooseOptions':
+    chooseOptions(channel)
+elif mode == 'recommendedTvShows':
+    recommendedTvShows(channel)	
 elif mode == 'listTvShows':
     listTvShows(channel)
 elif mode == 'listEpisodes':
