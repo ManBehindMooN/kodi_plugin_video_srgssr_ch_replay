@@ -81,8 +81,16 @@ def listTvShows(channel):
 		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
 
 #'this method list all TV shows from SRF when SRF-Podcast was selected in the main menu'
-def recommendedTvShows(channel):
-	url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/video/editorialPlayerPicks.json'
+def listVideosByMode(channel,mode):
+	url = ''
+
+	if mode == 'recommendedTvShows':
+		url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/video/editorialPlayerPicks.json'
+	elif mode == 'newestTvShows':
+		url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/video/editorialPlayerLatest.json'
+	elif mode == 'mostClickedTvShows':
+		url = 'http://il.srf.ch/integrationlayer/1.0/ue/' + channel + '/video/mostClicked.json'
+	
 	response = json.load(open_srf_url(url))
 	
 	videos =  response["Videos"]["Video"]
@@ -313,7 +321,11 @@ if mode == 'chooseChannel':
 elif mode == 'chooseOptions':
     chooseOptions(channel)
 elif mode == 'recommendedTvShows':
-    recommendedTvShows(channel)	
+    listVideosByMode(channel,mode)	
+elif mode == 'newestTvShows':
+    listVideosByMode(channel,mode)	
+elif mode == 'mostClickedTvShows':
+    listVideosByMode(channel,mode)	
 elif mode == 'listTvShows':
     listTvShows(channel)
 elif mode == 'listEpisodes':
