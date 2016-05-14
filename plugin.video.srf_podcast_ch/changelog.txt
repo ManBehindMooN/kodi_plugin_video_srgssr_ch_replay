@@ -1,3 +1,8 @@
+[B]v1.4.0[/B]
+- Added option for most clicked videos
+- Added option for recommended videos
+- Added option for newest videos
+
 [B]v1.3.2[/B]
 - Added extended title information
 - Added page information on episode list

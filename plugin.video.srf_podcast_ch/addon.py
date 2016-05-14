@@ -43,10 +43,10 @@ def chooseChannel():
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 def chooseOptions(channel):
-	addOption('dummy','Alle Shows', 'listTvShows',channel,1)
-	addOption('dummy','Neuste Videos', 'newestTvShows',channel,1)
-	addOption('dummy','Meist Geklickt', 'mostClickedTvShows',channel,1)
-	addOption('dummy','Empfohlen', 'recommendedTvShows',channel,1)
+	addOption('dummy',addon.getLocalizedString(33008), 'listTvShows',channel,1)
+	addOption('dummy',addon.getLocalizedString(33005), 'newestTvShows',channel,1)
+	addOption('dummy',addon.getLocalizedString(33006), 'mostClickedTvShows',channel,1)
+	addOption('dummy',addon.getLocalizedString(33007), 'recommendedTvShows',channel,1)
 #	addOption('c49c1d73-2f70-0001-138a-15e0c4ccd3d0','Live', 'liveTvShows',channel,1)
 	xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 	
