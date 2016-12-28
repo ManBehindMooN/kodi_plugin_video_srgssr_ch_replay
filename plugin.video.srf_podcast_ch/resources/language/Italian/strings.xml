@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+  <string id="30001">Tutti i Podcast</string>
+  <string id="30002">Favoriti</string>
+  <string id="30003">Aggiungi ai Favoriti</string>
+  <string id="30004">Rimuovi dai Favoriti</string>
+  <string id="30005">Show nuovi</string>
+  <string id="30006">Show raccomandati</string>
+  <string id="30007">Show più visti</string>
+  <string id="30008">Tutti gli show</string>
+  <string id="30104">Usa Fan Art</string>
+  <string id="30101">Forza le viste del Menu</string>
+  <string id="30102">ViewID per Video</string>
+  <string id="30106">ViewID per lista Show</string>
+  <string id="30107">Numero di episodi per pagina</string>
+  <string id="33001">Visualizza vecchi episodi di questo show.. pagina ({0} di {1})</string>
+</strings>
