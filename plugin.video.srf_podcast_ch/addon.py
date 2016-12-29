@@ -48,10 +48,10 @@ def chooseOptions(channel):
 	addOption('dummy',addon.getLocalizedString(30005), 'newestTvShows',channel,1)
 	addOption('dummy',addon.getLocalizedString(30007), 'mostClickedTvShows',channel,1)
 	addOption('dummy',addon.getLocalizedString(30006), 'recommendedTvShows',channel,1)
-#	addOption('c49c1d73-2f70-0001-138a-15e0c4ccd3d0','Live', 'liveTvShows',channel,1)
+	addOption('c49c1d73-2f70-0001-138a-15e0c4ccd3d0','Live', 'liveTvShows',channel,1)
 	xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 	
-#'this method list all TV shows from SRF when SRF-Podcast was selected in the main menu'
+#'this method list all TV shows available for selected channel'
 def listTvShows(channel):
 	url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/tv/assetGroup/editorialPlayerAlphabetical.json'
 	response = json.load(open_srf_url(url))
@@ -81,7 +81,7 @@ def listTvShows(channel):
 	if forceViewMode:
 		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
 
-#'this method list all TV shows from SRF when SRF-Podcast was selected in the main menu'
+#'this method list all TV shows available for selected channel and mode'
 def listVideosByMode(channel,mode,page):
 	url = ''
 	if mode == 'recommendedTvShows':
@@ -125,47 +125,36 @@ def listVideosByMode(channel,mode,page):
 	if forceViewMode:
 		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
 
-#'this method plays the channel live'
-#def playlivechannel(channel,episodeid):
-#	besturl = ''
-#	downloadflag = 0
-#	
-#	try:
-#		url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/'+episodeid+'.json'
-#		response = json.load(open_srf_url(url))
-#		print 'url works'
-#		urls =  response["Video"]["Playlists"]["Playlist"]["@protocol=HTTP-HLS"]["url"]
-#		print 'response works'
-#		besturl = ''
-#		if urls.__len__() > 1:
-#			for tempurl in urls:
-#				if tempurl['@quality'] == 'HD':
-#					besturl = tempurl['text']
-#		else:
-#			besturl = urls[0]['text']
-#		downloadflag = 1
-#	except:
-#		print "not for download"
-#
-#	if downloadflag == 0:
-#		try:
-#			url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/'+episodeid+'.json'
-#			response = json.load(open_srf_url(url))
-#			urls =  response["Video"]["Playlists"]['Playlist'][1]['url']
-#			besturl = ''
-#			if urls.__len__() > 1:
-#				for tempurl in urls:
-#					if tempurl['@quality'] == 'HD':
-#						besturl = tempurl['text']
-#			else:
-#				besturl = urls[0]['text']
-#			
-#			downloadflag = 0
-#		except:
-#			print "not for download"  
-#	listitem = xbmcgui.ListItem(path=besturl)
-#	xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
-
+#'this method list all live streams available for selected channel'
+def listLiveStreams(channel):
+	url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/livestream.json'
+	
+	response = json.load(open_srf_url(url))
+	videos =  response["Videos"]["Video"]
+	title = ''
+	desc = ''
+	picture = ''
+	length = 0
+	mode = 'playepisode'
+	for video in videos:
+		try:
+			title = video['AssetSet']['Rubric']['title']
+		except:
+			title = 'No Title'
+		try:
+			picture = video['AssetSet']['Rubric']['PrimaryChannel']['Image']['ImageRepresentations']['ImageRepresentation'][0]['url']
+		except:
+			picture = ''
+		try:
+			pubdate = video['AssetSet']['publishedDate']
+		except:
+			pubdate = ''		
+		addLink(title, video['id'], 'playepisode', desc, picture, length, pubdate,showbackground,channel)
+			
+	xbmcplugin.addSortMethod(pluginhandle,1)
+	xbmcplugin.endOfDirectory(pluginhandle)
+	if forceViewMode:
+		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
 		
 #'this method list all episodes of the selected show'
 def listEpisodes(channel,showid,showbackground,page):
@@ -220,51 +209,53 @@ def listEpisodes(channel,showid,showbackground,page):
 	xbmcplugin.endOfDirectory(pluginhandle)
 	if forceViewMode:
 		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
-	
+
 #'this method plays the selected episode'
 def playepisode(channel,episodeid):
 	besturl = ''
-	downloadflag = 0
 	
 	try:
-		url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/'+episodeid+'.json'
+		url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/' + episodeid + '.json'
 		response = json.load(open_srf_url(url))
-		urls =  response['Video']['Playlists']['Playlist[?(@.@protocol==\'HTTP-HLS\')]'][url]
-		besturl = ''
-		if urls.__len__() > 1:
-			for tempurl in urls:
-				if tempurl['@quality'] == 'HD':
-					besturl = tempurl['text']
-		else:
-			besturl = urls[0]['text']
-		downloadflag = 1
+		playlistVector = response['Video']['Playlists']['Playlist']
+		
+		# filter objects with list comprehensions
+		playlist = [obj for obj in playlistVector if obj['@protocol'] == 'HTTP-HLS']
+		
+		playlistVector = playlist[0]
+		urls = playlistVector['url']
+		
+		besturl = urls[0]['text']
+		for tempurl in urls:
+			if tempurl['@quality'] == 'HD':
+				besturl = tempurl['text']
+				break
+		
 	except:
 		print "not for download"
 
-	if downloadflag == 0:
+	if besturl == '':
 		try:
-			url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/'+episodeid+'.json'
+			url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/' + episodeid + '.json'
 			response = json.load(open_srf_url(url))
-			urls =  response['Video']['Playlists']['Playlist'][0 if channel == 'rts' else 1]['url']
-			besturl = ''
-			if urls.__len__() > 1:
-				for tempurl in urls:
-					if tempurl['@quality'] == 'HD':
-						besturl = tempurl['text']
-			else:
-				besturl = urls[0]['text']
+			urls =  response['Video']['Playlists']['Playlist'][0]['url']
 			
-			downloadflag = 0
+			besturl = urls[0]['text']
+			for tempurl in urls:
+				if tempurl['@quality'] == 'HD':
+					besturl = tempurl['text']
+					break
+			
 		except:
 			print "not for download"
 
 	# add authentication token for akamaihd
-	if 'akamaihd' in urlparse(besturl).netloc:
-		url = 'http://tp.srgssr.ch/akahd/token?acl=' + urlparse(besturl).path 
+	if "akamaihd" in urlparse(besturl).netloc:
+		url = "http://tp.srgssr.ch/akahd/token?acl=" + urlparse(besturl).path 
 		response = json.load(open_srf_url(url))
-		token = response["token"]['authparams']
+		token = response["token"]["authparams"]
 		besturl = besturl + '?' + token 
-		
+	
 	listitem = xbmcgui.ListItem(path=besturl)
 	xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
 
@@ -297,7 +288,7 @@ def addShow(name, url, mode, desc, iconimage,page,channel):
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
     return ok
 
-	#'helper method to create a folder with subitems'
+#'helper method to create a folder with subitems'
 def addnextpage(name, url, mode, desc, showbackground,page,channel):
 	ok = True
 	directoryurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&showbackground="+urllib.quote_plus(showbackground)+"&page="+str(page)+"&channel="+str(channel)
@@ -369,13 +360,13 @@ if mode == 'chooseChannel':
 elif mode == 'chooseOptions':
     chooseOptions(channel)
 elif mode == 'recommendedTvShows':
-    listVideosByMode(channel,mode,page)	
+    listVideosByMode(channel,mode,page)
 elif mode == 'newestTvShows':
-    listVideosByMode(channel,mode,page)	
+    listVideosByMode(channel,mode,page)
 elif mode == 'mostClickedTvShows':
-    listVideosByMode(channel,mode,page)	
-#elif mode == 'liveTvShows':
-#	playlivechannel(channel,url)
+    listVideosByMode(channel,mode,page)
+elif mode == 'liveTvShows':
+    listLiveStreams(channel)
 elif mode == 'listTvShows':
     listTvShows(channel)
 elif mode == 'listEpisodes':
@@ -383,5 +374,5 @@ elif mode == 'listEpisodes':
 elif mode == 'playepisode':
     playepisode(channel,url)
 else:
-    chooseChannel() 
+    chooseChannel()
     
