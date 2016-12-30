@@ -134,6 +134,7 @@ def listLiveStreams(channel):
 	title = ''
 	desc = ''
 	picture = ''
+	pubdate = ''
 	length = 0
 	mode = 'playepisode'
 	for video in videos:
@@ -144,11 +145,7 @@ def listLiveStreams(channel):
 		try:
 			picture = video['AssetSet']['Rubric']['PrimaryChannel']['Image']['ImageRepresentations']['ImageRepresentation'][0]['url']
 		except:
-			picture = ''
-		try:
-			pubdate = video['AssetSet']['publishedDate']
-		except:
-			pubdate = ''		
+			picture = ''	
 		addLink(title, video['id'], 'playepisode', desc, picture, length, pubdate,showbackground,channel)
 			
 	xbmcplugin.addSortMethod(pluginhandle,1)
@@ -164,7 +161,7 @@ def listEpisodes(channel,showid,showbackground,page):
 	try:
 		maxpage = response["AssetSets"]["@maxPageNumber"]
 	except:
-		maxpage = 1
+		maxpage = 0
 
 	show =  response["AssetSets"]["AssetSet"]
 		
@@ -202,14 +199,14 @@ def listEpisodes(channel,showid,showbackground,page):
 	# check if another page is available
 	page = int(page)
 	maxpage = int(maxpage)
-	if page < maxpage:
+	if page < maxpage or maxpage == 0 and len(show) == int(numberOfEpisodesPerPage):
 		page = page + 1
 		addnextpage(addon.getLocalizedString(33001).format(page,maxpage), showid, 'listEpisodes', '', showbackground,page,channel)
 	
 	xbmcplugin.endOfDirectory(pluginhandle)
 	if forceViewMode:
 		xbmc.executebuiltin('Container.SetViewMode('+viewModeShows+')')
-
+	
 #'this method plays the selected episode'
 def playepisode(channel,episodeid):
 	besturl = ''
@@ -375,4 +372,3 @@ elif mode == 'playepisode':
     playepisode(channel,url)
 else:
     chooseChannel()
-    
