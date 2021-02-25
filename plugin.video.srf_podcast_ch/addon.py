@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import json
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import socket
 import re
 import xbmc
@@ -12,9 +12,9 @@ import xbmcgui
 import xbmcaddon
 import os
 import traceback
-from StringIO import StringIO 
+from io import StringIO 
 import gzip
-from urlparse import urlparse 
+from urllib.parse import urlparse 
 
 #'Base settings'
 #'Start of the plugin functionality is at the end of the file'
@@ -228,7 +228,7 @@ def playepisode(channel,episodeid):
 				break
 		
 	except:
-		print "not for download"
+		print("not for download")
 
 	if besturl == '':
 		try:
@@ -243,7 +243,7 @@ def playepisode(channel,episodeid):
 					break
 			
 		except:
-			print "not for download"
+			print("not for download")
 
 	# add authentication token for akamaihd
 	if "akamaihd" in urlparse(besturl).netloc:
@@ -258,14 +258,14 @@ def playepisode(channel,episodeid):
 #'helper method to create a network-item in the list
 def addChannel(id, name, mode):
     ok = True
-    directoryurl = sys.argv[0]+"?channel="+urllib.quote_plus(id)+"&mode="+str(mode)
+    directoryurl = sys.argv[0]+"?channel="+urllib.parse.quote_plus(id)+"&mode="+str(mode)
     liz = xbmcgui.ListItem(name)
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
     return ok
 	
 def addOption(url, name, mode,channel,page):
     ok = True
-    directoryurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&channel="+str(channel)+"&page="+str(page)
+    directoryurl = sys.argv[0]+"?url="+urllib.parse.quote_plus(url)+"&mode="+str(mode)+"&channel="+str(channel)+"&page="+str(page)
     liz = xbmcgui.ListItem(name)
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
     return ok
@@ -273,10 +273,10 @@ def addOption(url, name, mode,channel,page):
 #'helper method to create a folder with subitems'
 def addShow(name, url, mode, desc, iconimage,page,channel):
     ok = True
-    directoryurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&showbackground="+urllib.quote_plus(iconimage)+"&page="+str(page)+"&channel="+str(channel)
+    directoryurl = sys.argv[0]+"?url="+urllib.parse.quote_plus(url)+"&mode="+str(mode)+"&showbackground="+urllib.parse.quote_plus(iconimage)+"&page="+str(page)+"&channel="+str(channel)
     liz = xbmcgui.ListItem(name)
-    liz.setIconImage("DefaultFolder.png")
-    liz.setThumbnailImage(iconimage)
+    #liz.setIconImage("DefaultFolder.png")
+    #liz.setThumbnailImage(iconimage)
     liz.setLabel2(desc)
     liz.setArt({'poster' : iconimage , 'banner' : iconimage, 'fanart' : iconimage, 'thumb' : iconimage})
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
@@ -287,7 +287,7 @@ def addShow(name, url, mode, desc, iconimage,page,channel):
 #'helper method to create a folder with subitems'
 def addnextpage(name, url, mode, desc, showbackground,page,channel):
 	ok = True
-	directoryurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&showbackground="+urllib.quote_plus(showbackground)+"&page="+str(page)+"&channel="+str(channel)
+	directoryurl = sys.argv[0]+"?url="+urllib.parse.quote_plus(url)+"&mode="+str(mode)+"&showbackground="+urllib.parse.quote_plus(showbackground)+"&page="+str(page)+"&channel="+str(channel)
 	liz = xbmcgui.ListItem(name)
 	liz.setLabel2(desc)
 	#liz.setArt({'poster' : '' , 'banner' : '', 'fanart' : showbackground, 'thumb' : ''})
@@ -299,10 +299,10 @@ def addnextpage(name, url, mode, desc, showbackground,page,channel):
 #'helper method to create an item in the list'
 def addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground,channel):
 	ok = True
-	linkurl = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&channel="+str(channel)
+	linkurl = sys.argv[0]+"?url="+urllib.parse.quote_plus(url)+"&mode="+str(mode)+"&channel="+str(channel)
 	liz = xbmcgui.ListItem(name)
-	liz.setIconImage('')
-	liz.setThumbnailImage(iconurl)
+	#liz.setIconImage('')
+	#liz.setThumbnailImage(iconurl)
 	liz.setLabel2(desc)
 	liz.setArt({'poster' : iconurl , 'banner' : iconurl, 'fanart' : showbackground, 'thumb' : iconurl})
 	liz.setInfo(type='Video', infoLabels={"Title": name, "Duration": length, "Plot": desc, "Aired" : pubdate})
@@ -323,17 +323,17 @@ def parameters_string_to_dict(parameters):
     return paramDict
 
 def open_srf_url(urlstring):
-    request = urllib2.Request(urlstring) 
+    request = urllib.request.Request(urlstring) 
     request.add_header('Accept-encoding', 'gzip') 
     response = ''
     try:
-        response = urllib2.urlopen(urlstring) 
+        response = urllib.request.urlopen(urlstring) 
         if response.info().get('Content-Encoding') == 'gzip': 
             buf = StringIO( response.read()) 
             f = gzip.GzipFile(fileobj=buf) 
             response = StringIO(f.read())
     except Exception as e:
-        print traceback.format_exc()
+        print(traceback.format_exc())
         dialog = xbmcgui.Dialog().ok('xStream Error',str(e.__class__.__name__),str(e))
 	
     return response
@@ -344,7 +344,7 @@ params = parameters_string_to_dict(sys.argv[2])
 mode = params.get('mode', '')
 url = params.get('url', '')
 channel = params.get('channel', '')
-showbackground = urllib.unquote_plus(params.get('showbackground', ''))
+showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
 page = params.get('page', '')
 
 #mode = urllib.unquote_plus(params.get('mode', ''))
