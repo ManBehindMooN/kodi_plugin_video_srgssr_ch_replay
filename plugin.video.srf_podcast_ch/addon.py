@@ -6,7 +6,6 @@ import urllib
 import urllib2
 import socket
 import re
-import xml.etree.ElementTree as ET
 import xbmc
 import xbmcplugin
 import xbmcgui
@@ -53,7 +52,7 @@ def chooseOptions(channel):
 	
 #'this method list all TV shows available for selected channel'
 def listTvShows(channel):
-	url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/tv/assetGroup/editorialPlayerAlphabetical.json'
+	url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/tv/assetGroup/'
 	response = json.load(open_srf_url(url))
 	shows =  response["AssetGroups"]["Show"]
 	title = ''
