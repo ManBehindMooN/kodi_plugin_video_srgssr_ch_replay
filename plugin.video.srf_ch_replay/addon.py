@@ -22,7 +22,6 @@ addon = xbmcaddon.Addon()
 addonID = 'plugin.video.srf_podcast_ch'
 pluginhandle = int(sys.argv[1])
 socket.setdefaulttimeout(30)
-translation = addon.getLocalizedString
 xbmcplugin.setPluginCategory(pluginhandle,"News")
 xbmcplugin.setContent(pluginhandle,"tvshows")
 addon_work_folder = xbmc.translatePath("special://profile/addon_data/"+addonID)
@@ -43,16 +42,16 @@ def chooseChannel():
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 def chooseOptions(channel):
-	addOption('dummy',addon.getLocalizedString(30008), 'listTvShows',channel,1)
-	addOption('dummy',addon.getLocalizedString(30005), 'newestTvShows',channel,1)
-	addOption('dummy',addon.getLocalizedString(30007), 'mostClickedTvShows',channel,1)
-	addOption('dummy',addon.getLocalizedString(30006), 'recommendedTvShows',channel,1)
+	addOption('dummy','Alle SRF Podcasts', 'listTvShows',channel,1)
+	addOption('dummy','Neuste Sendungen', 'newestTvShows',channel,1)
+	addOption('dummy','Beliebteste Sendungen', 'mostClickedTvShows',channel,1)
+	addOption('dummy','Empfohlene Sendungen', 'recommendedTvShows',channel,1)
 	addOption('c49c1d73-2f70-0001-138a-15e0c4ccd3d0','Live', 'liveTvShows',channel,1)
 	xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 	
 #'this method list all TV shows available for selected channel'
 def listTvShows(channel):
-	url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/tv/assetGroup/'
+	url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/srf/tv/assetGroup/'
 	response = json.load(open_srf_url(url))
 	shows =  response["AssetGroups"]["Show"]
 	title = ''
@@ -200,7 +199,7 @@ def listEpisodes(channel,showid,showbackground,page):
 	maxpage = int(maxpage)
 	if page < maxpage or maxpage == 0 and len(show) == int(numberOfEpisodesPerPage):
 		page = page + 1
-		addnextpage(addon.getLocalizedString(33001).format(page,maxpage), showid, 'listEpisodes', '', showbackground,page,channel)
+		addnextpage('Weitere Folgen Seite {0} von {1}'.format(page,maxpage), showid, 'listEpisodes', '', showbackground,page,channel)
 	
 	xbmcplugin.endOfDirectory(pluginhandle)
 	if forceViewMode:
@@ -343,7 +342,7 @@ def open_srf_url(urlstring):
 params = parameters_string_to_dict(sys.argv[2])
 mode = params.get('mode', '')
 url = params.get('url', '')
-channel = params.get('channel', '')
+channel = params.get('channel', 'srf')
 showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
 page = params.get('page', '')
 
@@ -370,4 +369,5 @@ elif mode == 'listEpisodes':
 elif mode == 'playepisode':
     playepisode(channel,url)
 else:
-    chooseChannel()
+    listTvShows(channel)
+    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
