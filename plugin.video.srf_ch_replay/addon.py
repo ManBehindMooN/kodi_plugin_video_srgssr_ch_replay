@@ -108,7 +108,7 @@ def listEpisodes(showid,showbackground,page):
 	maxpage = int(maxpage)
 	if page < maxpage or maxpage == 0 and len(show) == int(numberOfEpisodesPerPage):
 		page = page + 1
-		addnextpage('Weitere Folgen Seite {0} von {1}'.format(page,maxpage), showid, 'listEpisodes', '', showbackground,page)
+		addnextpage('Ältere Folgen (Seite {0} von {1})'.format(page,maxpage), showid, 'listEpisodes', '', showbackground,page)
 	
 	xbmcplugin.endOfDirectory(pluginhandle)
 	if forceViewMode:
