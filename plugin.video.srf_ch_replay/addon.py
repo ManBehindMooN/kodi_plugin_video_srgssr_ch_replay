@@ -30,6 +30,7 @@ FavoritesFile = xbmc.translatePath("special://profile/addon_data/" + addonID + "
 forceViewMode = addon.getSetting("forceView") == "true"
 viewModeShows = str(addon.getSetting("viewIDShows"))
 numberOfEpisodesPerPage = str(addon.getSetting("numberOfShowsPerPage"))
+tr = addon.getLocalizedString
 
 
 def open_srf_url(urlstring):
@@ -174,7 +175,7 @@ def listEpisodes(showid, showbackground, page):
     maxpage = int(maxpage)
     if page < maxpage or maxpage == 0 and len(show) == int(numberOfEpisodesPerPage):
         page = page + 1
-        _addnextpage('Ältere Folgen (Seite {0} von {1})'.format(page, maxpage), showid, 'listEpisodes', '', showbackground, page)
+        _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page)
 
     xbmcplugin.endOfDirectory(pluginhandle)
     if forceViewMode:

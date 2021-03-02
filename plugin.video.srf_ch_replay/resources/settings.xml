@@ -1,7 +1,7 @@
 <settings>
-	 <category label="Allgemein">
-	   <setting id="forceView" type="bool" label="Forciere Menu Views" default="true"/>
-	   <setting id="viewIDShows" type="number" label="ViewID für Show Liste" default="504"/>  
-	   <setting id="numberOfShowsPerPage" type="number" label="Abzahl Episodes pro Seite anzeigen" default="10"/>
+	 <category label="30001">
+	   <setting id="forceView" type="bool" label="30002" default="true"/>
+	   <setting id="viewIDShows" type="number" label="30003" default="504"/>  
+	   <setting id="numberOfShowsPerPage" type="number" label="30004" default="10"/>
 	</category>
 </settings>

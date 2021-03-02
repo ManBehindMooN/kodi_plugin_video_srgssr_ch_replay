@@ -1,0 +1,25 @@
+# XBMC Media Center language file
+# Addon Name: SRF Replay
+# Addon id: plugin.video.srf_ch_replay
+msgid ""
+msgstr ""
+
+msgctxt "#30001"
+msgid "General"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Force Menu Views"
+msgstr ""
+
+msgctxt "#30003"
+msgid "ViewID for Show List"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Number of episodes shown per page"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Older episodes (page {0} of {1})"
+msgstr ""

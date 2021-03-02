@@ -13,10 +13,10 @@
 		<icon>icon.png</icon>
 	</assets>
     <summary lang="en">SRF Replay plugin lists all shows from SRF.</summary>
-    <description lang="en">SRF Replay plugin lists all recorded shows from the national Swiss German TV station SRF. As all the shows are mainly in German the translation of this plugin is in German only.</description>
+    <description lang="en">SRF Replay plugin lists all recorded shows from the national Swiss German TV station SRF. All the shows are mainly in German.</description>
     <disclaimer lang="en">This plugin is not endorsed by SRF</disclaimer>
 	<summary lang="de">SRF Replay Plugin zeigt alle SRF Sendungen.</summary>
-    <description lang="de">Der SRF Replay Plugin zeigt alle aufgezeichneten Sendungen vom nationalen Schweizer deutschprachigen TV Sender SRF. Aus diesen Grund wird dieser Plugin nur in Deutsch angeboten.</description>
+    <description lang="de">Der SRF Replay Plugin zeigt alle aufgezeichneten Sendungen vom nationalen Schweizer deutschprachigen TV Sender SRF. Die Sendungen sind hauptsächlich in deutscher Spracher.</description>
     <disclaimer lang="de">Dieser Plugin ist nicht offiziell von SRF</disclaimer>
     <language>de</language>
     <platform>all</platform>
