@@ -22,7 +22,9 @@ Every time you select a TV show from your favorites only this show's content wil
 ## Installation
 
 ### Manual
-Just zip the `plugin.video.srf_ch_replay` folder and install it manually on Kodi 19.0. Go the add-ons menu and select "Install from zip file". Follow the instructions and at the end select the zip file and install. The "SRF Replay" plugin will appear immediately in your add-ons menu. If you get and error that your usb stick can not be read just restart Kodi and try again.
+Just zip the `plugin.video.srf_ch_replay` folder. Alternatively use the ant `build.xml` file and run the `build plugin zip` target to build the zip file.
+
+Go the add-ons menu and select "Install from zip file". Follow the instructions and at the end select the zip file and install. The "SRF Replay" plugin will appear immediately in your add-ons menu. If you get and error that your usb stick can not be read just restart Kodi and try again.
 
 ### Kodi repository
 Will it be available in the Kodi 19 repository any time soon? It might as soon as the code has been refactored to my satisfaction.
