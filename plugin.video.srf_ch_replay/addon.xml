@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.srf_ch_replay" name="SRF Replay" version="19.0.0" provider-name="Man Behind MooN">
+<addon id="plugin.video.srf_ch_replay" name="SRF Replay" version="2.0.0" provider-name="Man Behind MooN">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
   </requires>
@@ -12,13 +12,13 @@
 	<assets>
 		<icon>icon.png</icon>
 	</assets>
-    <summary lang="en">SRF Replay plugin lists all shows from SRF.</summary>
-    <description lang="en">SRF Replay plugin lists all recorded shows from the national Swiss German TV station SRF. All the shows are mainly in German.</description>
-    <disclaimer lang="en">This plugin is not endorsed by SRF</disclaimer>
-	<summary lang="de">SRF Replay Plugin zeigt alle SRF Sendungen.</summary>
-    <description lang="de">Der SRF Replay Plugin zeigt alle aufgezeichneten Sendungen vom nationalen Schweizer deutschprachigen TV Sender SRF. Die Sendungen sind hauptsächlich in deutscher Spracher.</description>
-    <disclaimer lang="de">Dieser Plugin ist nicht offiziell von SRF</disclaimer>
-    <language>de</language>
+    <summary lang="en_gb">SRF Replay plugin lists all shows from SRF.</summary>
+    <description lang="en_gb">SRF Replay plugin lists all recorded shows from the national Swiss German TV station SRF. All the shows are mainly in German.</description>
+    <disclaimer lang="en_gb">This plugin is not endorsed by SRF</disclaimer>
+	<summary lang="de_de">SRF Replay Plugin zeigt alle SRF Sendungen.</summary>
+    <description lang="de_de">Der SRF Replay Plugin zeigt alle aufgezeichneten Sendungen vom nationalen Schweizer deutschprachigen TV Sender SRF. Die Sendungen sind hauptsächlich in deutscher Spracher.</description>
+    <disclaimer lang="de_de">Dieser Plugin ist nicht offiziell von SRF</disclaimer>
+    <language>de_de</language>
     <platform>all</platform>
     <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
     <forum></forum>
