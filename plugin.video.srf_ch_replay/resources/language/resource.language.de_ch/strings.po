@@ -14,7 +14,7 @@ msgstr "Forciere Menu Views"
 
 msgctxt "#30003"
 msgid "ViewID for Show List"
-msgstr "ViewID für Show Liste"
+msgstr "ViewID fÃ¼r Show Liste"
 
 msgctxt "#30004"
 msgid "Number of episodes shown per page"
@@ -22,4 +22,4 @@ msgstr "Abzahl Episodes pro Seite anzeigen"
 
 msgctxt "#30005"
 msgid "Older episodes (page {0} of {1})"
-msgstr "Ältere Folgen (Seite {0} von {1})"
+msgstr "Ã„ltere Folgen (Seite {0} von {1})"
