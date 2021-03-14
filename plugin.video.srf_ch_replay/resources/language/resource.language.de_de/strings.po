@@ -32,6 +32,42 @@ msgctxt "#30009"
 msgid "No url"
 msgstr "Keine Url"
 
+msgctxt "#30010"
+msgid "Official API"
+msgstr "Offizielles API"
+
+msgctxt "#30011"
+msgid "Use official API"
+msgstr "Benutze offizelles API"
+
+msgctxt "#30012"
+msgid "Consumer Key"
+msgstr "Consumer Key"
+
+msgctxt "#30013"
+msgid "Consumer Secret"
+msgstr "Consumer Secret"
+
+msgctxt "#30014"
+msgid "SRF"
+msgstr "SRF"
+
+msgctxt "#30015"
+msgid "SRF Info"
+msgstr "SRF Info"
+
+msgctxt "#30016"
+msgid "RTS"
+msgstr "RTS"
+
+msgctxt "#30017"
+msgid "RSI"
+msgstr "RSI"
+
+msgctxt "#30018"
+msgid "RTR"
+msgstr "RTR"
+
 msgctxt "#30019"
 msgid "# (numbers & special characters)"
 msgstr "# (Nummern & Sonderzeichen)"

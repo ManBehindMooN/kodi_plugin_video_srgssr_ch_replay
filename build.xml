@@ -3,7 +3,7 @@
 
 	<target name="zip">
 		<delete file="${ant.project.name}.zip" />
-		<zip destfile="${ant.project.name}.zip" basedir="." excludes="*, .settings/*" />
+		<zip destfile="${ant.project.name}.zip" basedir="." excludes="*, .settings/*, .idea/*" />
 	</target>
 
 </project>

@@ -21,6 +21,12 @@ The TV show just appears and the Kodi favorite menu and can be selected from the
 
 Every time you select a TV show from your favorites only this show's content will be loaded. You will save click and loading time.
 
+## Official SRF API
+
+TODO https://developer.srgssr.ch/user/register for consumer key & secret (with pictures here)
+TODO more channels
+TODO explain old favorites do not work anymore
+
 ## Installation
 
 ### Kodi repository
