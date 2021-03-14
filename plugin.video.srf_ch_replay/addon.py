@@ -9,6 +9,7 @@ import xbmc
 import xbmcplugin
 import xbmcgui
 import xbmcaddon
+import xbmcvfs
 import os
 import traceback
 from io import StringIO
@@ -23,12 +24,10 @@ pluginhandle = int(sys.argv[1])
 socket.setdefaulttimeout(30)
 xbmcplugin.setPluginCategory(pluginhandle, "News")
 xbmcplugin.setContent(pluginhandle, "tvshows")
-addon_work_folder = xbmc.translatePath("special://profile/addon_data/" + addonID)
+addon_work_folder = xbmcvfs.translatePath("special://profile/addon_data/" + addonID)
 if not os.path.isdir(addon_work_folder):
     os.mkdir(addon_work_folder)
-FavoritesFile = xbmc.translatePath("special://profile/addon_data/" + addonID + "/" + addonID + ".favorites")
-forceViewMode = addon.getSetting("forceView") == "true"
-viewModeShows = str(addon.getSetting("viewIDShows"))
+FavoritesFile = xbmcvfs.translatePath("special://profile/addon_data/" + addonID + "/" + addonID + ".favorites")
 numberOfEpisodesPerPage = str(addon.getSetting("numberOfShowsPerPage"))
 tr = addon.getLocalizedString
 
@@ -44,8 +43,8 @@ def open_srf_url(urlstring):
             f = gzip.GzipFile(fileobj=buf)
             response = StringIO(f.read())
     except Exception as e:
-        print(traceback.format_exc())
-        xbmcgui.Dialog().ok('xStream Error', str(e.__class__.__name__), str(e))
+        xbmc.log(traceback.format_exc())
+        xbmcgui.Dialog().ok(tr(30006), str(e.__class__.__name__), str(e))
     return response
 
 
@@ -79,11 +78,11 @@ def listTvShows():
         try:
             title = show['title']
         except:
-            title = 'No Title'
+            title = tr(30007)
         try:
             desc = show['description']
         except:
-            desc = 'No Description'
+            desc = tr(30008)
         try:
             picture = show['Image']['ImageRepresentations']['ImageRepresentation'][0]['url']
         except:
@@ -92,8 +91,8 @@ def listTvShows():
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
-    if forceViewMode:
-        xbmc.executebuiltin('Container.SetViewMode(' + viewModeShows + ')')
+    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
+   
 
 
 def _addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground):
@@ -149,7 +148,7 @@ def listEpisodes(showid, showbackground, page):
         try:
             desc = episode['Assets']['Video'][0]['AssetMetadatas']['AssetMetadata'][0]['description']
         except:
-            desc = 'No Description'
+            desc = tr(30008)
         try:
             picture = episode['Assets']['Video'][0]['Image']['ImageRepresentations']['ImageRepresentation'][0]['url']
         except:
@@ -162,7 +161,7 @@ def listEpisodes(showid, showbackground, page):
         try:
             url = episode['Assets']['Video'][0]['id']
         except:
-            url = 'no url'
+            url = tr(30009)
         try:
             titleextended = ' - ' + episode['Assets']['Video'][0]['AssetMetadatas']['AssetMetadata'][0]['title']
         except:
@@ -178,8 +177,6 @@ def listEpisodes(showid, showbackground, page):
         _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page)
 
     xbmcplugin.endOfDirectory(pluginhandle)
-    if forceViewMode:
-        xbmc.executebuiltin('Container.SetViewMode(' + viewModeShows + ')')
 
 
 def playepisode(episodeid):
@@ -207,7 +204,7 @@ def playepisode(episodeid):
                 break
 
     except:
-        print("not for download")
+        xbmc.log(traceback.format_exc())
 
     if besturl == '':
         try:
@@ -222,7 +219,7 @@ def playepisode(episodeid):
                     break
 
         except:
-            print("not for download")
+            xbmc.log(traceback.format_exc())
 
     # add authentication token for akamaihd
     if "akamaihd" in urlparse(besturl).netloc:
@@ -262,4 +259,4 @@ elif mode == 'playepisode':
     playepisode(url)
 else:
     listTvShows()
-    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
+    

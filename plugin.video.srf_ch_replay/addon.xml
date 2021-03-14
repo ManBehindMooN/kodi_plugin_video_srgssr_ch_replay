@@ -7,22 +7,19 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-	 <news>
-	</news>
+	 <news>Former "SRF Podcast Plugin" reloaded as "SRF Replay" for Kodi 19</news>
 	<assets>
 		<icon>icon.png</icon>
 	</assets>
-    <summary lang="en_gb">SRF Replay plugin lists all shows from SRF.</summary>
-    <description lang="en_gb">SRF Replay plugin lists all recorded shows from the national Swiss German TV station SRF. All the shows are mainly in German.</description>
-    <disclaimer lang="en_gb">This plugin is not endorsed by SRF</disclaimer>
-	<summary lang="de_de">SRF Replay Plugin zeigt alle SRF Sendungen.</summary>
-    <description lang="de_de">Der SRF Replay Plugin zeigt alle aufgezeichneten Sendungen vom nationalen Schweizer deutschprachigen TV Sender SRF. Die Sendungen sind hauptsächlich in deutscher Spracher.</description>
-    <disclaimer lang="de_de">Dieser Plugin ist nicht offiziell von SRF</disclaimer>
-    <language>de_de</language>
+    <summary lang="en_GB">SRF Replay plugin lists all shows from SRF.</summary>
+    <description lang="en_GB">SRF Replay plugin lists all recorded shows from the national Swiss German TV station SRF. All the shows are mainly in German.</description>
+    <disclaimer lang="en_GB">This plugin is not endorsed by SRF</disclaimer>
+	<summary lang="de_DE">SRF Replay Plugin zeigt alle SRF Sendungen.</summary>
+    <description lang="de_DE">Der SRF Replay Plugin zeigt alle aufgezeichneten Sendungen vom nationalen Schweizer deutschprachigen TV Sender SRF. Die Sendungen sind hauptsächlich in deutscher Sprache.</description>
+    <disclaimer lang="de_DE">Dieser Plugin ist nicht offiziell von SRF</disclaimer>
+    <language>de</language>
     <platform>all</platform>
-    <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
-    <forum></forum>
-    <website></website>
+    <license>GPL-2.0-or-later</license>
     <email>man_behind_moon at gmx</email>
     <source>https://github.com/ManBehindMooN/kodi_plugin_video_srf_ch_replay</source>
   </extension>

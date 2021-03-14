@@ -8,14 +8,6 @@ msgctxt "#30001"
 msgid "General"
 msgstr "Allgemein"
 
-msgctxt "#30002"
-msgid "Force Menu Views"
-msgstr "Forciere Menu Views"
-
-msgctxt "#30003"
-msgid "ViewID for Show List"
-msgstr "ViewID für Show Liste"
-
 msgctxt "#30004"
 msgid "Number of episodes shown per page"
 msgstr "Abzahl Episodes pro Seite anzeigen"
@@ -23,3 +15,19 @@ msgstr "Abzahl Episodes pro Seite anzeigen"
 msgctxt "#30005"
 msgid "Older episodes (page {0} of {1})"
 msgstr "Ältere Folgen (Seite {0} von {1})"
+
+msgctxt "#30006"
+msgid "Unexpected error"
+msgstr "Unerwarteter Fehler"
+
+msgctxt "#30007"
+msgid "No title"
+msgstr "Kein Titel"
+
+msgctxt "#30008"
+msgid "No description"
+msgstr "Keine Beschreibung"
+
+msgctxt "#30009"
+msgid "No url"
+msgstr "Keine Url"
