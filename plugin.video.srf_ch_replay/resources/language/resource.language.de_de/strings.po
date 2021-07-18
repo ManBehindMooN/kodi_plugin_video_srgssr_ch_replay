@@ -8,6 +8,14 @@ msgctxt "#30001"
 msgid "General"
 msgstr "Allgemein"
 
+msgctxt "#30002"
+msgid "Use my ViewID"
+msgstr "Benutze meine ViewID"
+
+msgctxt "#30003"
+msgid "ViewID for show list"
+msgstr "ViewID für Show Liste"
+
 msgctxt "#30004"
 msgid "Number of episodes shown per page"
 msgstr "Abzahl Episodes pro Seite anzeigen"
@@ -31,3 +39,7 @@ msgstr "Keine Beschreibung"
 msgctxt "#30009"
 msgid "No url"
 msgstr "Keine Url"
+
+msgctxt "#30019"
+msgid "# (numbers & special characters)"
+msgstr "# (Nummern & Sonderzeichen)"
