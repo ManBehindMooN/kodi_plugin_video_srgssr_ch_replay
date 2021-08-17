@@ -31,9 +31,6 @@ if not os.path.isdir(addon_work_folder):
 FavoritesFile = xbmcvfs.translatePath("special://profile/addon_data/" + addonID + "/" + addonID + ".favorites")
 numberOfEpisodesPerPage = str(addon.getSetting("numberOfShowsPerPage"))
 tr = addon.getLocalizedString
-# disabled by default
-myView = addon.getSetting("myView") == "true"
-viewModeShows = str(addon.getSetting("viewIDShows"))
 
 #####################################
 # OLD SRF Podcast Plugin api methods
@@ -87,8 +84,6 @@ def list_all_tv_shows(letter):
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
-    if myView:
-        xbmc.executebuiltin('Container.SetViewMode(' + viewModeShows + ')')
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
@@ -187,9 +182,6 @@ def list_all_episodes(showid, showbackground, page):
         page = page + 1
         _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page)
         
-    if myView:
-        xbmc.executebuiltin('Container.SetViewMode(' + viewModeShows + ')')
-
     xbmcplugin.endOfDirectory(pluginhandle)
 
 

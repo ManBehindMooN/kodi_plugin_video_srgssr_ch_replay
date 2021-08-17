@@ -8,14 +8,6 @@ msgctxt "#30001"
 msgid "General"
 msgstr ""
 
-msgctxt "#30002"
-msgid "Use my ViewID"
-msgstr ""
-
-msgctxt "#30003"
-msgid "ViewID for show list"
-msgstr ""
-
 msgctxt "#30004"
 msgid "Number of episodes shown per page"
 msgstr ""
