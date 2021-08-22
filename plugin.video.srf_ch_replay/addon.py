@@ -38,6 +38,7 @@ useOfficialApi = addon.getSetting("useOfficialApi") == "true"
 consumerKey = addon.getSetting("consumerKey")
 consumerSecret = addon.getSetting("consumerSecret")
 tr = addon.getLocalizedString
+default_channel = 'srf'
 
 
 #####################################
@@ -49,7 +50,7 @@ SRG_API_HOST = "api.srgssr.ch"
 # TODO (milestone 3) other than srf channel -> not stable yet; this should be investigated
 def choose_channel():
     nextMode = 'chooseTvShowLetter'
-    _add_channel('srf', tr(30014), nextMode)
+    _add_channel(default_channel, tr(30014), nextMode)
     _add_channel('swi', tr(30015), nextMode)
     _add_channel('rts', tr(30016), nextMode)
     _add_channel('rsi', tr(30017), nextMode)
@@ -69,7 +70,7 @@ def list_tv_shows_new(channel, letter):
         title = show.get('title')
         desc = show.get('description')
         picture = show.get('imageUrl')
-        _add_show(title, showid, mode, desc, picture, "")
+        _add_show(title, showid, mode, desc, picture, "", channel)
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
@@ -95,13 +96,13 @@ def list_episodes_new(channel, showid, showbackground, page):
         url = media.get('id')
         picture = media.get('imageUrl')
         length = int(media.get('duration', 0)) / 1000 / 60
-        _addLink(title, url, 'playepisode', desc, picture, length, pubdate, showbackground)
+        _addLink(title, url, 'playepisode', desc, picture, length, pubdate, showbackground, channel)
 
     next_page_url = response.get('next')
     if next_page_url:
         next_param = urllib.parse.parse_qs(urllib.parse.urlparse(next_page_url).query).get('next')[0]
         # TODO: No page number available ==> can be calculated with the numberOfShowsPerPage param
-        _addnextpage(tr(30005).format("?", "?"), showid, 'listEpisodes', '', showbackground, next_param)
+        _addnextpage(tr(30005).format("?", "?"), showid, 'listEpisodes', '', showbackground, next_param, channel)
 
     xbmcplugin.endOfDirectory(pluginhandle)
 
@@ -188,7 +189,7 @@ def list_all_tv_shows(letter):
 
         firstTitleLetter = title[:1]
         if (firstTitleLetter.lower() == letter) or (not firstTitleLetter.isalpha() and not str(letter).isalpha()):
-            _add_show(title, show['id'], mode, desc, picture, page)
+            _add_show(title, show['id'], mode, desc, picture, page, default_channel)
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
@@ -238,14 +239,14 @@ def list_all_episodes(showid, showbackground, page):
         except:
             titleextended = ''
 
-        _addLink(title + titleextended, url, 'playepisode', desc, picture, length, pubdate, showbackground)
+        _addLink(title + titleextended, url, 'playepisode', desc, picture, length, pubdate, showbackground, default_channel)
 
     # check if another page is available
     page = int(page)
     maxpage = int(maxpage)
     if page < maxpage or maxpage == 0 and len(show) == int(numberOfEpisodesPerPage):
         page = page + 1
-        _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page)
+        _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page, default_channel)
 
     xbmcplugin.endOfDirectory(pluginhandle)
 
@@ -337,11 +338,11 @@ def _add_letter(channel, letter, letterDescription, mode):
     return xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
 
 
-def _add_show(name, url, mode, desc, iconimage, page):
+def _add_show(name, url, mode, desc, iconimage, page, channel):
     """
     helper method to create a folder with subitems
     """
-    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + "&page=" + str(page) + "&channel=srf"
+    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + "&page=" + str(page) + "&channel=" + str(channel)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconimage, 'banner': iconimage, 'fanart': iconimage, 'thumb': iconimage})
@@ -351,11 +352,11 @@ def _add_show(name, url, mode, desc, iconimage, page):
     return ok
 
 
-def _addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground):
+def _addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground, channel):
     """
     helper method to create an item in the list
     """
-    linkurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&channel=srf"
+    linkurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&channel=" + str(channel)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconurl, 'banner': iconurl, 'fanart': showbackground, 'thumb': iconurl})
@@ -366,11 +367,11 @@ def _addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground):
     return ok
 
 
-def _addnextpage(name, url, mode, desc, showbackground, page):
+def _addnextpage(name, url, mode, desc, showbackground, page, channel):
     """
     helper method to create a folder with subitems
     """
-    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(showbackground) + "&page=" + str(page) + "&channel=srf"
+    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(showbackground) + "&page=" + str(page) + "&channel=" + str(channel)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     #liz.setArt({'poster' : '' , 'banner' : '', 'fanart' : showbackground, 'thumb' : ''})
@@ -402,7 +403,7 @@ mode = params.get('mode', '')
 url = params.get('url', '')
 showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
 page = params.get('page', '')
-channel = params.get('channel', 'srf')
+channel = params.get('channel', default_channel)
 letter = params.get('letter', '')
 
 if useOfficialApi:
