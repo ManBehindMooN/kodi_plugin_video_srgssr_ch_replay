@@ -36,13 +36,13 @@ FavoritesFile = xbmcvfs.translatePath("special://profile/addon_data/" + addonID 
 numberOfEpisodesPerPage = str(addon.getSetting("numberOfShowsPerPage"))
 useOfficialApi = addon.getSetting("useOfficialApi") == "true"
 consumerKey = addon.getSetting("consumerKey")
-consumerSecret = addon.getSetting("consumerSecret")
+consumerSecret = addon.getSetting("consumerSecret") 
 tr = addon.getLocalizedString
 default_channel = 'srf'
 
 
 #####################################
-# NEW SRF Podcast Plugin api methods
+# NEW SRG SSR API methods
 #####################################
 
 SRG_API_HOST = "api.srgssr.ch"
@@ -101,7 +101,7 @@ def list_episodes_new(channel, showid, showbackground, page):
     next_page_url = response.get('next')
     if next_page_url:
         next_param = urllib.parse.parse_qs(urllib.parse.urlparse(next_page_url).query).get('next')[0]
-        # TODO: No page number available ==> can be calculated with the numberOfShowsPerPage param
+        # TODO Frank: No page number available ==> can be calculated with the numberOfShowsPerPage param
         _addnextpage(tr(30005).format("?", "?"), showid, 'listEpisodes', '', showbackground, next_param, channel)
 
     xbmcplugin.endOfDirectory(pluginhandle)
@@ -129,6 +129,7 @@ def _srg_api_get(path, *, query=None, bearer, exp_code=None):
 
 def _srg_api_auth_token():
     
+    # TODO Frank: fallback logic if error 4xx then reset token
     token_ts = addon.getSetting('srgssrTokenTS')
     if token_ts: 
         delta_ts = datetime.datetime.utcnow() - datetime.datetime.fromisoformat(token_ts)
@@ -166,7 +167,7 @@ def list_all_tv_shows(letter):
     this method list all available TV shows
     """
     url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/srf/tv/assetGroup/'
-    response = json.load(_open_srf_url(url))
+    response = json.load(_open_url(url))
     shows = response["AssetGroups"]["Show"]
     title = ''
     desc = ''
@@ -201,7 +202,7 @@ def list_all_episodes(showid, showbackground, page):
     this method list all episodes of the selected show
     """
     url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/srf/assetSet/listByAssetGroup/' + showid + '.json?pageNumber=' + str(page) + "&pageSize=" + str(numberOfEpisodesPerPage)
-    response = json.load(_open_srf_url(url))
+    response = json.load(_open_url(url))
     maxpage = 1
     try:
         maxpage = response["AssetSets"]["@maxPageNumber"]
@@ -255,7 +256,7 @@ def list_all_episodes(showid, showbackground, page):
 # Common methods
 #####################################
 
-def play_episode(episodeid):
+def play_episode(channel, episodeid):
     """
     this method plays the selected episode
     """
@@ -263,8 +264,8 @@ def play_episode(episodeid):
     besturl = ''
 
     try:
-        url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/srf/video/play/' + episodeid + '.json'
-        response = json.load(_open_srf_url(url))
+        url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/' + episodeid + '.json'
+        response = json.load(_open_url(url))
         playlistVector = response['Video']['Playlists']['Playlist']
 
         # filter objects with list comprehensions
@@ -284,8 +285,8 @@ def play_episode(episodeid):
 
     if besturl == '':
         try:
-            url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/srf/video/play/' + episodeid + '.json'
-            response = json.load(_open_srf_url(url))
+            url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/' + episodeid + '.json'
+            response = json.load(_open_url(url))
             urls = response['Video']['Playlists']['Playlist'][0]['url']
 
             besturl = urls[0]['text']
@@ -300,7 +301,7 @@ def play_episode(episodeid):
     # add authentication token for akamaihd
     if "akamaihd" in urlparse(besturl).netloc:
         url = "http://tp.srgssr.ch/akahd/token?acl=" + urlparse(besturl).path
-        response = json.load(_open_srf_url(url))
+        response = json.load(_open_url(url))
         token = response["token"]["authparams"]
         besturl = besturl + '?' + token
 
@@ -308,7 +309,7 @@ def play_episode(episodeid):
     xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
 
 
-def _open_srf_url(urlstring):
+def _open_url(urlstring):
     request = urllib.request.Request(urlstring)
     request.add_header('Accept-encoding', 'gzip')
     response = ''
@@ -408,7 +409,7 @@ letter = params.get('letter', '')
 
 if useOfficialApi:
     if mode == 'playepisode':
-        play_episode(url)
+        play_episode(channel, url)
     elif mode == 'listEpisodes':
         list_episodes_new(channel, url, showbackground, page)
     elif mode == 'listTvShows':
@@ -421,7 +422,7 @@ if useOfficialApi:
         # choose_channel()
 else:
     if mode == 'playepisode':
-        play_episode(url)
+        play_episode(channel, url)
     elif mode == 'listEpisodes':
         list_all_episodes(url, showbackground, page)
     elif mode == 'listTvShows':
