@@ -24,7 +24,7 @@ import datetime
 #'Base settings'
 #'Start of the plugin functionality is at the end of the file'
 addon = xbmcaddon.Addon()
-addonID = 'plugin.video.srf_podcast_ch'
+addonID = 'plugin.video.srf_ch_replay'
 pluginhandle = int(sys.argv[1])
 socket.setdefaulttimeout(30)
 xbmcplugin.setPluginCategory(pluginhandle, "News")
