@@ -33,10 +33,10 @@ addon_work_folder = xbmcvfs.translatePath("special://profile/addon_data/" + addo
 if not os.path.isdir(addon_work_folder):
     os.mkdir(addon_work_folder)
 FavoritesFile = xbmcvfs.translatePath("special://profile/addon_data/" + addonID + "/" + addonID + ".favorites")
-numberOfEpisodesPerPage = str(addon.getSetting("numberOfShowsPerPage"))
+numberOfEpisodesPerPage = int(addon.getSetting("numberOfShowsPerPage"))
 useOfficialApi = addon.getSetting("useOfficialApi") == "true"
 consumerKey = addon.getSetting("consumerKey")
-consumerSecret = addon.getSetting("consumerSecret") 
+consumerSecret = addon.getSetting("consumerSecret")
 tr = addon.getLocalizedString
 default_channel = 'srf'
 
@@ -48,6 +48,8 @@ default_channel = 'srf'
 SRG_API_HOST = "api.srgssr.ch"
 
 # TODO (milestone 3) other than srf channel -> not stable yet; this should be investigated
+
+
 def choose_channel():
     nextMode = 'chooseTvShowLetter'
     _add_channel(default_channel, tr(30014), nextMode)
@@ -70,18 +72,19 @@ def list_tv_shows_new(channel, letter):
         title = show.get('title')
         desc = show.get('description')
         picture = show.get('imageUrl')
-        _add_show(title, showid, mode, desc, picture, "", channel)
+        numberOfEpisodes = show.get('numberOfEpisodes')
+        _add_show(title, showid, mode, desc, picture, "", channel, numberOfEpisodes)
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
-def list_episodes_new(channel, showid, showbackground, page):
+def list_episodes_new(channel, showid, showbackground, pageNumber, numberOfEpisodes, nextParam):
     PATH = f"/videometadata/v2/latest_episodes/shows/{showid}"
     query = {"bu": channel}
-    if page:
-        query.update({"next": page})
+    if nextParam:
+        query.update({"next": nextParam})
     else:
         query.update({"pageSize": numberOfEpisodesPerPage})
     response = _srg_get(PATH, query=query)
@@ -100,9 +103,9 @@ def list_episodes_new(channel, showid, showbackground, page):
 
     next_page_url = response.get('next')
     if next_page_url:
+        numberOfPages = int((numberOfEpisodesPerPage - 1 + numberOfEpisodes) / numberOfEpisodesPerPage)
         next_param = urllib.parse.parse_qs(urllib.parse.urlparse(next_page_url).query).get('next')[0]
-        # TODO Frank: No page number available ==> can be calculated with the numberOfShowsPerPage param
-        _addnextpage(tr(30005).format("?", "?"), showid, 'listEpisodes', '', showbackground, next_param, channel)
+        _addnextpage(tr(30005).format(pageNumber, numberOfPages), showid, 'listEpisodes', '', showbackground, pageNumber + 1, channel, numberOfEpisodes, next_param)
 
     xbmcplugin.endOfDirectory(pluginhandle)
 
@@ -116,7 +119,7 @@ def _add_channel(channelId, name, mode):
 def _srg_get(path, query):
     token = _srg_api_auth_token()
     if token:
-        r = _srg_api_get(path, bearer=token, query=query, exp_code=200)
+        r = _srg_api_get(path, bearer=token, query=query, exp_code=[200, 203])
     return r.json()
 
 
@@ -128,10 +131,9 @@ def _srg_api_get(path, *, query=None, bearer, exp_code=None):
 
 
 def _srg_api_auth_token():
-    
     # TODO Frank: fallback logic if error 4xx then reset token
     token_ts = addon.getSetting('srgssrTokenTS')
-    if token_ts: 
+    if token_ts:
         delta_ts = datetime.datetime.utcnow() - datetime.datetime.fromisoformat(token_ts)
         token = addon.getSetting('srgssrToken')
         if delta_ts < datetime.timedelta(days=25) and token:
@@ -245,9 +247,9 @@ def list_all_episodes(showid, showbackground, page):
     # check if another page is available
     page = int(page)
     maxpage = int(maxpage)
-    if page < maxpage or maxpage == 0 and len(show) == int(numberOfEpisodesPerPage):
+    if page < maxpage or maxpage == 0 and len(show) == numberOfEpisodesPerPage:
         page = page + 1
-        _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page, default_channel)
+        _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page, default_channel, 0, '')
 
     xbmcplugin.endOfDirectory(pluginhandle)
 
@@ -339,11 +341,12 @@ def _add_letter(channel, letter, letterDescription, mode):
     return xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
 
 
-def _add_show(name, url, mode, desc, iconimage, page, channel):
+def _add_show(name, url, mode, desc, iconimage, page, channel, numberOfEpisodes):
     """
     helper method to create a folder with subitems
     """
-    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + "&page=" + str(page) + "&channel=" + str(channel)
+    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + \
+        "&page=" + str(page) + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconimage, 'banner': iconimage, 'fanart': iconimage, 'thumb': iconimage})
@@ -368,11 +371,12 @@ def _addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground, ch
     return ok
 
 
-def _addnextpage(name, url, mode, desc, showbackground, page, channel):
+def _addnextpage(name, url, mode, desc, showbackground, pageNumber, channel, numberOfEpisodes, nextParam):
     """
     helper method to create a folder with subitems
     """
-    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(showbackground) + "&page=" + str(page) + "&channel=" + str(channel)
+    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(showbackground) + \
+        "&page=" + str(pageNumber) + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes) + "&next=" + str(nextParam)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     #liz.setArt({'poster' : '' , 'banner' : '', 'fanart' : showbackground, 'thumb' : ''})
@@ -403,15 +407,17 @@ params = _parameters_string_to_dict(sys.argv[2])
 mode = params.get('mode', '')
 url = params.get('url', '')
 showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
-page = params.get('page', '')
+page = int(params.get('page', 1))
 channel = params.get('channel', default_channel)
 letter = params.get('letter', '')
+numberOfEpisodes = int(params.get('numberOfEpisodes', 0))
+nextParam = params.get('next')
 
 if useOfficialApi:
     if mode == 'playepisode':
         play_episode(channel, url)
     elif mode == 'listEpisodes':
-        list_episodes_new(channel, url, showbackground, page)
+        list_episodes_new(channel, url, showbackground, page, numberOfEpisodes, nextParam)
     elif mode == 'listTvShows':
         list_tv_shows_new(channel, letter)
     elif mode == 'chooseTvShowLetter':
