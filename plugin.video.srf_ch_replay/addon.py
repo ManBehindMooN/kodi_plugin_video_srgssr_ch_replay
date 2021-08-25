@@ -410,7 +410,11 @@ showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
 page = int(params.get('page', 1))
 channel = params.get('channel', default_channel)
 letter = params.get('letter', '')
-numberOfEpisodes = int(params.get('numberOfEpisodes', 0))
+numberOfEpisodes = params.get('numberOfEpisodes', 0)
+if numberOfEpisodes == 'None':
+    numberOfEpisodes = 0
+else: 
+    numberOfEpisodes = int(numberOfEpisodes)
 nextParam = params.get('next')
 
 if useOfficialApi:
