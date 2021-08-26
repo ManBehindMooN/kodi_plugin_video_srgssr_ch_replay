@@ -47,8 +47,6 @@ default_channel = 'srf'
 
 SRG_API_HOST = "api.srgssr.ch"
 
-# TODO (milestone 3) other than srf channel -> not stable yet; this should be investigated
-
 
 def choose_channel():
     nextMode = 'chooseTvShowLetter'
@@ -289,6 +287,48 @@ def play_episode(channel, episodeid):
 
     besturl = ''
 
+    if channel == 'rsi':
+        besturl = _parse_integrationplayer_2(episodeid)
+    else: 
+        besturl = _parse_integrationplayer_1(channel, episodeid)
+
+    # add authentication token for akamaihd
+    if "akamaihd" in urlparse(besturl).netloc:
+        url = "http://tp.srgssr.ch/akahd/token?acl=" + urlparse(besturl).path
+        response = json.load(_open_url(url))
+        token = response["token"]["authparams"]
+        besturl = besturl + '?' + token
+
+    listitem = xbmcgui.ListItem(path=besturl)
+    xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
+
+
+# TODO (milestone 3) not stable yet
+def _parse_integrationplayer_2(episodeid):
+    """
+    RSI channel only at the moment
+    """
+    #TODO make url dynamic
+    url = 'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json'
+    response = json.load(_open_url(url))
+    
+    #TODO search for the best akaidhd stream
+    #response['chapterList'][0]['resourceList']
+    
+    # search for HLS if found search for HD take it
+    # only take HD
+    # otherwise take the first one
+    
+    # TODO remove all url params...
+    #"https://codww-vh.akamaihd.net/i/rsi/unrestricted/2021/08/26/6596a9cae834004fe24fbdaf901d2b0b_20210826_182938_,360,272,.mp4.csmil/master.m3u8?start=0.0&end=1604.482"
+    
+    besturl = 'https://codww-vh.akamaihd.net/i/rsi/unrestricted/2021/08/26/6596a9cae834004fe24fbdaf901d2b0b_20210826_182938_,720,360,272,.mp4.csmil/master.m3u8' 
+    return besturl
+    
+
+def _parse_integrationplayer_1(channel, episodeid):
+    besturl = ''
+
     try:
         url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/' + episodeid + '.json'
         response = json.load(_open_url(url))
@@ -323,16 +363,8 @@ def play_episode(channel, episodeid):
 
         except:
             xbmc.log(traceback.format_exc())
-
-    # add authentication token for akamaihd
-    if "akamaihd" in urlparse(besturl).netloc:
-        url = "http://tp.srgssr.ch/akahd/token?acl=" + urlparse(besturl).path
-        response = json.load(_open_url(url))
-        token = response["token"]["authparams"]
-        besturl = besturl + '?' + token
-
-    listitem = xbmcgui.ListItem(path=besturl)
-    xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
+    
+    return besturl
 
 
 def _open_url(urlstring):
@@ -447,9 +479,7 @@ if useOfficialApi:
     elif mode == 'chooseTvShowLetter':
         choose_tv_show_letter(channel)
     else:
-        choose_tv_show_letter(channel)
-        # TODO (milestone 3) other channels than SRF are not stable yet
-        # choose_channel()
+        choose_channel()
 else:
     if mode == 'playepisode':
         play_episode(channel, url)
