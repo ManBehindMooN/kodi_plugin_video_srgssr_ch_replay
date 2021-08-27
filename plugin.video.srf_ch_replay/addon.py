@@ -117,14 +117,7 @@ def _add_channel(channelId, name, mode):
     return xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
 
 
-def _srg_get(path, query):
-    token = _srg_api_auth_token()
-    if token:
-        r = _srg_api_get(path, bearer=token, query=query, exp_code=[200, 203])
-    return r.json()
-
-
-def _srg_api_get(path, *, query=None, bearer, exp_code=None):
+def _srg_api_get_simple(path, *, query=None, bearer, exp_code=None):
     headers = {}
     if bearer:
         headers.update({"Authorization": f"Bearer {bearer}"})
@@ -132,7 +125,6 @@ def _srg_api_get(path, *, query=None, bearer, exp_code=None):
 
 
 def _srg_api_auth_token():
-    # TODO Frank: fallback logic if error 4xx then reset token
     token_ts = addon.getSetting('srgssrTokenTS')
     if token_ts:
         delta_ts = datetime.datetime.utcnow() - datetime.datetime.fromisoformat(token_ts)
@@ -142,11 +134,43 @@ def _srg_api_auth_token():
 
     query = {"grant_type": "client_credentials"}
     headers = {"Authorization": "Basic " + str(base64.b64encode(f"{consumerKey}:{consumerSecret}".encode("utf-8")), "utf-8")}
-    r = _http_request(SRG_API_HOST, 'POST', "/oauth/v1/accesstoken", query=query, headers=headers, exp_code=200)
+    try:
+        r = _http_request(SRG_API_HOST, 'POST', "/oauth/v1/accesstoken", query=query, headers=headers, exp_code=200)
+    except UnexpectedStatusCodeException as e:
+        if e.status_code in [401, 403]:
+            xbmc.log(f"Authentication failed -> No API token")
+        raise e
     access_token = r.json()["access_token"]
     addon.setSetting('srgssrToken', access_token)
     addon.setSetting('srgssrTokenTS', datetime.datetime.utcnow().isoformat())
     return access_token
+
+
+def _srg_get(path, query):
+    def _get_with_token(path, query):
+        token = _srg_api_auth_token()
+        if token:
+            r = _srg_api_get_simple(path, bearer=token, query=query, exp_code=[200, 203])
+            return r.json()
+        return None
+
+    try:
+        data = _get_with_token(path, query)
+    except UnexpectedStatusCodeException as e:
+        if e.status_code in [401, 403]:
+            # clear cached api token
+            addon.setSetting('srgssrToken', '')
+            addon.setSetting('srgssrTokenTS', '')
+            data = _get_with_token(path, query)
+        else:
+            raise e
+    return data
+
+
+class UnexpectedStatusCodeException(Exception):
+    def __init__(self, status_code, message):
+        self.status_code = status_code
+        super().__init__(message)
 
 
 def _http_request(host, method, path, query=None, headers={}, body_dict=None, exp_code=None):
@@ -157,7 +181,7 @@ def _http_request(host, method, path, query=None, headers={}, body_dict=None, ex
         if type(exp_code) is not list:
             exp_code = [exp_code]
         if (res.status_code not in exp_code):
-            raise Exception(str(res.status_code) + ':' + res.text)
+            raise UnexpectedStatusCodeException(res.status_code, str(res.status_code) + ':' + res.text)
     return res
 
 
