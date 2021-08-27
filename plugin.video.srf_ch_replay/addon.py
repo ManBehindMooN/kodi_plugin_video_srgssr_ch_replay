@@ -73,7 +73,7 @@ def list_tv_shows_new(channel, letter):
         desc = show.get('description')
         picture = show.get('imageUrl')
         numberOfEpisodes = show.get('numberOfEpisodes')
-        _add_show(title, showid, mode, desc, picture, "", channel, numberOfEpisodes)
+        _add_show(title, showid, mode, desc, picture, channel, numberOfEpisodes)
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
@@ -88,24 +88,25 @@ def list_episodes_new(channel, showid, showbackground, pageNumber, numberOfEpiso
     else:
         query.update({"pageSize": numberOfEpisodesPerPage})
     response = _srg_get(PATH, query=query)
-    show = response['show']
-    episodeList = response["episodeList"]
+    show = response.get('show')
+    episodeList = response.get("episodeList")
 
-    for episode in episodeList:
-        title = show.get('title') + ' - ' + episode.get('title')
-        desc = episode.get('description')
-        pubdate = episode.get('publishedDate')
-        media = episode.get('mediaList')[0]
-        url = media.get('id')
-        picture = media.get('imageUrl')
-        length = int(media.get('duration', 0)) / 1000 / 60
-        _addLink(title, url, 'playepisode', desc, picture, length, pubdate, showbackground, channel)
+    if show and episodeList:
+        for episode in episodeList:
+            title = show.get('title') + ' - ' + episode.get('title')
+            desc = episode.get('description')
+            pubdate = episode.get('publishedDate')
+            media = episode.get('mediaList')[0]
+            url = media.get('id')
+            picture = media.get('imageUrl')
+            length = int(media.get('duration', 0)) / 1000 / 60
+            _addLink(title, url, 'playepisode', desc, picture, length, pubdate, showbackground, channel)
 
-    next_page_url = response.get('next')
-    if next_page_url:
-        numberOfPages = int((numberOfEpisodesPerPage - 1 + numberOfEpisodes) / numberOfEpisodesPerPage)
-        next_param = urllib.parse.parse_qs(urllib.parse.urlparse(next_page_url).query).get('next')[0]
-        _addnextpage(tr(30005).format(pageNumber, numberOfPages), showid, 'listEpisodes', '', showbackground, pageNumber + 1, channel, numberOfEpisodes, next_param)
+        next_page_url = response.get('next')
+        if next_page_url:
+            numberOfPages = int((numberOfEpisodesPerPage - 1 + numberOfEpisodes) / numberOfEpisodesPerPage)
+            next_param = urllib.parse.parse_qs(urllib.parse.urlparse(next_page_url).query).get('next')[0]
+            _addnextpage(tr(30005).format(pageNumber, numberOfPages or '?'), showid, 'listEpisodes', '', showbackground, pageNumber + 1, channel, numberOfEpisodes, next_param)
 
     xbmcplugin.endOfDirectory(pluginhandle)
 
@@ -174,7 +175,6 @@ def list_all_tv_shows(letter):
     title = ''
     desc = ''
     picture = ''
-    page = 1
     mode = 'listEpisodes'
     for show in shows:
         try:
@@ -192,7 +192,7 @@ def list_all_tv_shows(letter):
 
         firstTitleLetter = title[:1]
         if (firstTitleLetter.lower() == letter) or (not firstTitleLetter.isalpha() and not str(letter).isalpha()):
-            _add_show(title, show['id'], mode, desc, picture, page, default_channel)
+            _add_show(title, show['id'], mode, desc, picture, default_channel)
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
@@ -341,12 +341,12 @@ def _add_letter(channel, letter, letterDescription, mode):
     return xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
 
 
-def _add_show(name, url, mode, desc, iconimage, page, channel, numberOfEpisodes):
+def _add_show(name, url, mode, desc, iconimage, channel, numberOfEpisodes):
     """
     helper method to create a folder with subitems
     """
     directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + \
-        "&page=" + str(page) + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes)
+        "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes or "")
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconimage, 'banner': iconimage, 'fanart': iconimage, 'thumb': iconimage})
@@ -376,7 +376,7 @@ def _addnextpage(name, url, mode, desc, showbackground, pageNumber, channel, num
     helper method to create a folder with subitems
     """
     directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(showbackground) + \
-        "&page=" + str(pageNumber) + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes) + "&next=" + str(nextParam)
+        "&page=" + str(pageNumber or "") + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes or "") + "&next=" + str(nextParam)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     #liz.setArt({'poster' : '' , 'banner' : '', 'fanart' : showbackground, 'thumb' : ''})
@@ -410,12 +410,8 @@ showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
 page = int(params.get('page', 1))
 channel = params.get('channel', default_channel)
 letter = params.get('letter', '')
-numberOfEpisodes = params.get('numberOfEpisodes', 0)
-if numberOfEpisodes == 'None':
-    numberOfEpisodes = 0
-else: 
-    numberOfEpisodes = int(numberOfEpisodes)
-nextParam = params.get('next')
+numberOfEpisodes = int(params.get('numberOfEpisodes', 0))
+nextParam = params.get('next', '')
 
 if useOfficialApi:
     if mode == 'playepisode':
