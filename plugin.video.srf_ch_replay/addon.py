@@ -288,7 +288,7 @@ def play_episode(channel, episodeid):
     besturl = ''
 
     if channel == 'rsi':
-        besturl = _parse_integrationplayer_2(episodeid)
+        besturl = _parse_integrationplayer_2(channel, episodeid)
     else: 
         besturl = _parse_integrationplayer_1(channel, episodeid)
 
@@ -304,26 +304,27 @@ def play_episode(channel, episodeid):
 
 
 # TODO (milestone 3) not stable yet
-def _parse_integrationplayer_2(episodeid):
+def _parse_integrationplayer_2(channel, episodeid):
     """
     RSI channel only at the moment
     """
-    #TODO make url dynamic
-    url = 'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json'
+    
+    url = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:{channel}:video:{episodeid}.json'
     response = json.load(_open_url(url))
     
-    #TODO search for the best akaidhd stream
-    #response['chapterList'][0]['resourceList']
     
-    # search for HLS if found search for HD take it
-    # only take HD
-    # otherwise take the first one
+    #TODO search for the best akaidhd stream in response['chapterList'][0]['resourceList'] 
+    # e.g https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json
     
-    # TODO remove all url params...
-    #"https://codww-vh.akamaihd.net/i/rsi/unrestricted/2021/08/26/6596a9cae834004fe24fbdaf901d2b0b_20210826_182938_,360,272,.mp4.csmil/master.m3u8?start=0.0&end=1604.482"
+    # 1) search for HLS if found search for HD take it
+    # 2) only take HD
+    # 3) search for default annotated 
+    # 4) otherwise take the first one
+    tempUrl = response['chapterList'][0]['resourceList'][0]['url']
     
-    besturl = 'https://codww-vh.akamaihd.net/i/rsi/unrestricted/2021/08/26/6596a9cae834004fe24fbdaf901d2b0b_20210826_182938_,720,360,272,.mp4.csmil/master.m3u8' 
-    return besturl
+    # remove all URL parameter
+    besturl = urlparse(tempUrl)
+    return f'{besturl.scheme}://{besturl.netloc}{besturl.path}'
     
 
 def _parse_integrationplayer_1(channel, episodeid):
