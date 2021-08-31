@@ -218,14 +218,10 @@ def _parse_integrationplayer_2(channel, episodeid):
     url = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:{channel}:video:{episodeid}.json'
     response = json.load(_open_url(url))
     
-    
-    #TODO search for the best akaidhd stream in response['chapterList'][0]['resourceList'] 
-    # e.g https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json
-    
+    # Future improvements: search for the best akaidhd stream in response['chapterList'][0]['resourceList'] e.g https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json
     # 1) search for HLS if found search for HD take it
     # 2) only take HD
-    # 3) search for default annotated 
-    # 4) otherwise take the first one
+    # 3) otherwise take the first one
     tempUrl = response['chapterList'][0]['resourceList'][0]['url']
     
     # remove all URL parameter
