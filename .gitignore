@@ -1,6 +1,6 @@
 /.project
 /.pydevproject
 /.settings/	
-/plugin.video.srf_ch_replay.zip
-/kodi_plugin_video_srf_ch_replay.iml
+/plugin.video*.zip
+/*.iml
 /.idea

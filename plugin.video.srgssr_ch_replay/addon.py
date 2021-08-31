@@ -24,7 +24,7 @@ import datetime
 #'Base settings'
 #'Start of the plugin functionality is at the end of the file'
 addon = xbmcaddon.Addon()
-addonID = 'plugin.video.srf_ch_replay'
+addonID = 'plugin.video.srgssr_ch_replay'
 pluginhandle = int(sys.argv[1])
 socket.setdefaulttimeout(30)
 xbmcplugin.setPluginCategory(pluginhandle, "News")
@@ -34,7 +34,6 @@ if not os.path.isdir(addon_work_folder):
     os.mkdir(addon_work_folder)
 FavoritesFile = xbmcvfs.translatePath("special://profile/addon_data/" + addonID + "/" + addonID + ".favorites")
 numberOfEpisodesPerPage = int(addon.getSetting("numberOfShowsPerPage"))
-useOfficialApi = addon.getSetting("useOfficialApi") == "true"
 consumerKey = addon.getSetting("consumerKey")
 consumerSecret = addon.getSetting("consumerSecret")
 tr = addon.getLocalizedString
@@ -181,99 +180,6 @@ def _http_request(host, method, path, query=None, headers={}, body_dict=None, ex
         if (res.status_code not in exp_code):
             raise UnexpectedStatusCodeException(res.status_code, str(res.status_code) + ':' + res.text)
     return res
-
-
-#####################################
-# OLD SRF Podcast Plugin api methods
-#####################################
-
-def list_all_tv_shows(letter):
-    """
-    this method list all available TV shows
-    """
-    url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/srf/tv/assetGroup/'
-    response = json.load(_open_url(url))
-    shows = response["AssetGroups"]["Show"]
-    title = ''
-    desc = ''
-    picture = ''
-    mode = 'listEpisodes'
-    for show in shows:
-        try:
-            title = show['title']
-        except:
-            title = tr(30007)
-        try:
-            desc = show['description']
-        except:
-            desc = tr(30008)
-        try:
-            picture = show['Image']['ImageRepresentations']['ImageRepresentation'][0]['url']
-        except:
-            picture = ''
-
-        firstTitleLetter = title[:1]
-        if (firstTitleLetter.lower() == letter) or (not firstTitleLetter.isalpha() and not str(letter).isalpha()):
-            _add_show(title, show['id'], mode, desc, picture, default_channel)
-
-    xbmcplugin.addSortMethod(pluginhandle, 1)
-    xbmcplugin.endOfDirectory(pluginhandle)
-    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
-
-
-def list_all_episodes(showid, showbackground, page):
-    """
-    this method list all episodes of the selected show
-    """
-    url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/srf/assetSet/listByAssetGroup/' + showid + '.json?pageNumber=' + str(page) + "&pageSize=" + str(numberOfEpisodesPerPage)
-    response = json.load(_open_url(url))
-    maxpage = 1
-    try:
-        maxpage = response["AssetSets"]["@maxPageNumber"]
-    except:
-        maxpage = 0
-
-    show = response["AssetSets"]["AssetSet"]
-
-    for episode in show:
-        title = episode['title']
-        url = ''
-        desc = ''
-        picture = ''
-        pubdate = episode['publishedDate']
-
-        try:
-            desc = episode['Assets']['Video'][0]['AssetMetadatas']['AssetMetadata'][0]['description']
-        except:
-            desc = tr(30008)
-        try:
-            picture = episode['Assets']['Video'][0]['Image']['ImageRepresentations']['ImageRepresentation'][0]['url']
-        except:
-            # no picture
-            picture = ''
-        try:
-            length = int(episode['Assets']['Video'][0]['duration']) / 1000 / 60
-        except:
-            length = 0
-        try:
-            url = episode['Assets']['Video'][0]['id']
-        except:
-            url = tr(30009)
-        try:
-            titleextended = ' - ' + episode['Assets']['Video'][0]['AssetMetadatas']['AssetMetadata'][0]['title']
-        except:
-            titleextended = ''
-
-        _addLink(title + titleextended, url, 'playepisode', desc, picture, length, pubdate, showbackground, default_channel)
-
-    # check if another page is available
-    page = int(page)
-    maxpage = int(maxpage)
-    if page < maxpage or maxpage == 0 and len(show) == numberOfEpisodesPerPage:
-        page = page + 1
-        _addnextpage(tr(30005).format(page, maxpage), showid, 'listEpisodes', '', showbackground, page, default_channel, 0, '')
-
-    xbmcplugin.endOfDirectory(pluginhandle)
 
 
 #####################################
@@ -470,23 +376,16 @@ letter = params.get('letter', '')
 numberOfEpisodes = int(params.get('numberOfEpisodes', 0))
 nextParam = params.get('next', '')
 
-if useOfficialApi:
-    if mode == 'playepisode':
-        play_episode(channel, url)
-    elif mode == 'listEpisodes':
-        list_episodes_new(channel, url, showbackground, page, numberOfEpisodes, nextParam)
-    elif mode == 'listTvShows':
-        list_tv_shows_new(channel, letter)
-    elif mode == 'chooseTvShowLetter':
-        choose_tv_show_letter(channel)
-    else:
-        choose_channel()
+if consumerKey == '' or consumerSecret == '':
+    xbmcgui.Dialog().ok(tr(30012) + ' / ' + tr(30013), tr(30020))
+    addon.openSettings()
+elif mode == 'playepisode':
+    play_episode(channel, url)
+elif mode == 'listEpisodes':
+    list_episodes_new(channel, url, showbackground, page, numberOfEpisodes, nextParam)
+elif mode == 'listTvShows':
+    list_tv_shows_new(channel, letter)
+elif mode == 'chooseTvShowLetter':
+    choose_tv_show_letter(channel)
 else:
-    if mode == 'playepisode':
-        play_episode(channel, url)
-    elif mode == 'listEpisodes':
-        list_all_episodes(url, showbackground, page)
-    elif mode == 'listTvShows':
-        list_all_tv_shows(letter)
-    else:
-        choose_tv_show_letter(channel)
+    choose_channel()

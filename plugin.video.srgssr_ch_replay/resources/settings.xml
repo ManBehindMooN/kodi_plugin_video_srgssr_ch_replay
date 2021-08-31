@@ -3,7 +3,6 @@
 	   <setting id="numberOfShowsPerPage" type="number" label="30004" default="10"/>
 	</category>
 	 <category label="30010">
-	   <setting id="useOfficialApi" type="bool" label="30011" default="false"/>
 	   <setting id="consumerKey" type="text" label="30012" />
 	   <setting id="consumerSecret" type="text" label="30013" />
 	</category>

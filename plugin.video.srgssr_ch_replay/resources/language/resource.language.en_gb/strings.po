@@ -1,6 +1,6 @@
 # XBMC Media Center language file
-# Addon Name: SRF Replay
-# Addon id: plugin.video.srf_ch_replay
+# Addon Name: Unofficial SRG SSR Replay
+# Addon id: plugin.video.srgssr_ch_replay
 msgid ""
 msgstr ""
 
@@ -36,10 +36,6 @@ msgctxt "#30010"
 msgid "Offical API"
 msgstr ""
 
-msgctxt "#30011"
-msgid "Use offical API"
-msgstr ""
-
 msgctxt "#30012"
 msgid "Consumer Key"
 msgstr ""
@@ -70,4 +66,8 @@ msgstr ""
 
 msgctxt "#30019"
 msgid "# (numbers & special characters)"
+msgstr ""
+
+msgctxt "#30020"
+msgid "In order to use this add-on a consumer key & secret in your add-on settings must be provided.[CR]See instructions: [B]https://github.com/ManBehindMooN/[CR]kodi_plugin_video_srgssr_ch_replay[/B][CR][CR]Sorry for the inconvenience."
 msgstr ""
