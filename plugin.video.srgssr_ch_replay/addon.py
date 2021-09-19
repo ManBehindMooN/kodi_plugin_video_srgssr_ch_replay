@@ -20,6 +20,8 @@ import requests
 import base64
 import datetime
 
+#TODO https://forum.kodi.tv/showthread.php?tid=346773
+
 
 #'Base settings'
 #'Start of the plugin functionality is at the end of the file'
@@ -59,7 +61,7 @@ def choose_channel():
 
 def list_tv_shows_new(channel, letter):
     PATH = "/videometadata/v2/tv_shows/alphabetical"
-    query = {"bu": channel, "characterFilter": letter}
+    query = {"bu": channel, "characterFilter": letter, "pageSize": "unlimited"}
     response = _srg_get(PATH, query=query)
     shows = response["showList"]
     mode = 'listEpisodes'
@@ -209,7 +211,6 @@ def play_episode(channel, episodeid):
     xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
 
 
-# TODO (milestone 3) not stable yet
 def _parse_integrationplayer_2(channel, episodeid):
     """
     RSI channel only at the moment
@@ -218,7 +219,7 @@ def _parse_integrationplayer_2(channel, episodeid):
     url = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:{channel}:video:{episodeid}.json'
     response = json.load(_open_url(url))
     
-    # Future improvements: search for the best akaidhd stream in response['chapterList'][0]['resourceList'] e.g https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json
+    # TODO: Future improvements: search for the best akaidhd stream in response['chapterList'][0]['resourceList'] e.g https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json
     # 1) search for HLS if found search for HD take it
     # 2) only take HD
     # 3) otherwise take the first one
@@ -309,6 +310,7 @@ def _add_show(name, url, mode, desc, iconimage, channel, numberOfEpisodes):
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconimage, 'banner': iconimage, 'fanart': iconimage, 'thumb': iconimage})
+    #TODO setInfo is deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
     xbmcplugin.setContent(pluginhandle, 'tvshows')
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
@@ -323,6 +325,7 @@ def _addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground, ch
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconurl, 'banner': iconurl, 'fanart': showbackground, 'thumb': iconurl})
+     #TODO setInfo is deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
     liz.setInfo(type='Video', infoLabels={"Title": name, "Duration": length, "Plot": desc, "Aired": pubdate})
     liz.setProperty('IsPlayable', 'true')
     xbmcplugin.setContent(pluginhandle, 'episodes')
@@ -338,7 +341,7 @@ def _addnextpage(name, url, mode, desc, showbackground, pageNumber, channel, num
         "&page=" + str(pageNumber or "") + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes or "") + "&next=" + str(nextParam)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
-    #liz.setArt({'poster' : '' , 'banner' : '', 'fanart' : showbackground, 'thumb' : ''})
+    #TODO setInfo is deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
     xbmcplugin.setContent(pluginhandle, 'episodes')
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
