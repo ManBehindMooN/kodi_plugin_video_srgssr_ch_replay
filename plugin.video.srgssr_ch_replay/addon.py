@@ -85,14 +85,15 @@ def _query_tv_shows(channel, path, query, rootIndex):
         desc = show.get('description')
         picture = show.get('imageUrl')
         numberOfEpisodes = show.get('numberOfEpisodes')
-        _add_show(title, showid, nextMode, desc, picture, channel, numberOfEpisodes)
+        urn = show.get('urn')
+        _add_show(title, showid, urn, nextMode, desc, picture, channel, numberOfEpisodes)
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
-def list_episodes_new(channel, showid, showbackground, pageNumber, numberOfEpisodes, nextParam):
+def list_episodes(channel, showid, showbackground, pageNumber, numberOfEpisodes, nextParam):
     PATH = f"/videometadata/v2/latest_episodes/shows/{showid}"
     query = {"bu": channel}
     if nextParam:
@@ -110,9 +111,10 @@ def list_episodes_new(channel, showid, showbackground, pageNumber, numberOfEpiso
             pubdate = episode.get('publishedDate')
             media = episode.get('mediaList')[0]
             url = media.get('id')
+            urn = media.get('urn')
             picture = media.get('imageUrl')
             length = int(media.get('duration', 0)) / 1000 / 60
-            _addLink(title, url, 'playEpisode', desc, picture, length, pubdate, showbackground, channel)
+            _addLink(title, url, urn, 'playEpisode', desc, picture, length, pubdate, showbackground, channel)
 
         next_page_url = response.get('next')
         if next_page_url:
@@ -201,17 +203,12 @@ def _http_request(host, method, path, query=None, headers={}, body_dict=None, ex
 # Common methods
 #####################################
 
-def play_episode(channel, episodeid):
+def play_episode(urn):
     """
     this method plays the selected episode
     """
 
-    besturl = ''
-
-    if channel == 'rsi':
-        besturl = _parse_integrationplayer_2(channel, episodeid)
-    else: 
-        besturl = _parse_integrationplayer_1(channel, episodeid)
+    besturl = _parse_integrationplayer_2(urn)
 
     # add authentication token for akamaihd
     if "akamaihd" in urlparse(besturl).netloc:
@@ -224,64 +221,28 @@ def play_episode(channel, episodeid):
     xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
 
 
-def _parse_integrationplayer_2(channel, episodeid):
-    """
-    RSI channel only at the moment
-    """
+def _parse_integrationplayer_2(urn):   
+    integrationlayerUrl = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/{urn}.json'
+    response = json.load(_open_url(integrationlayerUrl))
     
-    url = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:{channel}:video:{episodeid}.json'
-    response = json.load(_open_url(url))
-    
-    # TODO: Future improvements: search for the best akaidhd stream in response['chapterList'][0]['resourceList'] e.g https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/urn:rsi:video:14670486.json
-    # 1) search for HLS if found search for HD take it
-    # 2) only take HD
-    # 3) otherwise take the first one
-    tempUrl = response['chapterList'][0]['resourceList'][0]['url']
-    
-    # remove all URL parameter
-    besturl = urlparse(tempUrl)
-    return f'{besturl.scheme}://{besturl.netloc}{besturl.path}'
-    
+    resourceList = response['chapterList'][0]['resourceList']
+    sdHlsUrls = []
+    for play in resourceList:
+        if play['protocol'] == 'HLS':
+            if play['quality'] == 'HD':
+                return _remove_params(play['url'])
+            else:
+                sdHlsUrls.append(play)
+        
+    if not sdHlsUrls:
+        return _remove_params(resourceList[0]['url'])
+    else:
+        return _remove_params(sdHlsUrls[0]['url'])
 
-def _parse_integrationplayer_1(channel, episodeid):
-    besturl = ''
 
-    try:
-        url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/' + episodeid + '.json'
-        response = json.load(_open_url(url))
-        playlistVector = response['Video']['Playlists']['Playlist']
-
-        # filter objects with list comprehensions
-        playlist = [obj for obj in playlistVector if obj['@protocol'] == 'HTTP-HLS']
-
-        playlistVector = playlist[0]
-        urls = playlistVector['url']
-
-        besturl = urls[0]['text']
-        for tempurl in urls:
-            if tempurl['@quality'] == 'HD':
-                besturl = tempurl['text']
-                break
-
-    except:
-        xbmc.log(traceback.format_exc())
-
-    if besturl == '':
-        try:
-            url = 'http://il.srgssr.ch/integrationlayer/1.0/ue/' + channel + '/video/play/' + episodeid + '.json'
-            response = json.load(_open_url(url))
-            urls = response['Video']['Playlists']['Playlist'][0]['url']
-
-            besturl = urls[0]['text']
-            for tempurl in urls:
-                if tempurl['@quality'] == 'HD':
-                    besturl = tempurl['text']
-                    break
-
-        except:
-            xbmc.log(traceback.format_exc())
-    
-    return besturl
+def _remove_params(url):  
+    parsed = urlparse(url)
+    return f'{parsed.scheme}://{parsed.netloc}{parsed.path}'
 
 
 def _open_url(urlstring):
@@ -315,11 +276,11 @@ def _add_tv_show_option(channel, letter, letterDescription, mode):
     return xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
 
 
-def _add_show(name, url, mode, desc, iconimage, channel, numberOfEpisodes):
+def _add_show(name, url, urn, mode, desc, iconimage, channel, numberOfEpisodes):
     """
     helper method to create a folder with subitems
     """
-    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + \
+    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) +"&urn=" + str(urn) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + \
         "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes or "")
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
@@ -331,15 +292,15 @@ def _add_show(name, url, mode, desc, iconimage, channel, numberOfEpisodes):
     return ok
 
 
-def _addLink(name, url, mode, desc, iconurl, length, pubdate, showbackground, channel):
+def _addLink(name, url, urn, mode, desc, iconurl, length, pubdate, showbackground, channel):
     """
     helper method to create an item in the list
     """
-    linkurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&mode=" + str(mode) + "&channel=" + str(channel)
+    linkurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&urn=" + str(urn) + "&mode=" + str(mode) + "&channel=" + str(channel)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconurl, 'banner': iconurl, 'fanart': showbackground, 'thumb': iconurl})
-     #TODO setInfo is deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
+    #TODO setInfo is deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
     liz.setInfo(type='Video', infoLabels={"Title": name, "Duration": length, "Plot": desc, "Aired": pubdate})
     liz.setProperty('IsPlayable', 'true')
     xbmcplugin.setContent(pluginhandle, 'episodes')
@@ -382,6 +343,7 @@ def _parameters_string_to_dict(parameters):
 params = _parameters_string_to_dict(sys.argv[2])
 mode = params.get('mode', '')
 url = params.get('url', '')
+urn = params.get('urn', '')
 showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
 page = int(params.get('page', 1))
 channel = params.get('channel', default_channel)
@@ -393,9 +355,9 @@ if consumerKey == '' or consumerSecret == '':
     xbmcgui.Dialog().ok(tr(30012) + ' / ' + tr(30013), tr(30020))
     addon.openSettings()
 elif mode == 'playEpisode':
-    play_episode(channel, url)
+    play_episode(urn)
 elif mode == 'listEpisodes':
-    list_episodes_new(channel, url, showbackground, page, numberOfEpisodes, nextParam)
+    list_episodes(channel, url, showbackground, page, numberOfEpisodes, nextParam)
 elif mode == 'listTvShowsByLetter':
     list_tv_shows(channel, letter)
 elif mode == 'searchTvShows':
