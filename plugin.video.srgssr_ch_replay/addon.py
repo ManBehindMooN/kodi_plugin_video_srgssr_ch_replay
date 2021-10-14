@@ -50,7 +50,7 @@ SRG_API_HOST = "api.srgssr.ch"
 
 
 def choose_channel():
-    nextMode = 'chooseTvShowLetter'
+    nextMode = 'chooseTvShowOption'
     _add_channel(default_channel, tr(30014), nextMode)
     _add_channel('swi', tr(30015), nextMode)
     _add_channel('rts', tr(30016), nextMode)
@@ -59,12 +59,25 @@ def choose_channel():
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
-def list_tv_shows_new(channel, letter):
-    PATH = "/videometadata/v2/tv_shows/alphabetical"
+def search_tv_shows(channel):
+    dialog = xbmcgui.Dialog()
+    searchString = dialog.input(tr(30022), type=xbmcgui.INPUT_ALPHANUM)
+    if searchString != '':
+        path = "/videometadata/v2/tv_shows"
+        query = {"bu": channel, "q": searchString}
+        _query_tv_shows(channel, path, query, "searchResultListShow")
+        
+
+def list_tv_shows(channel, letter):
+    path = "/videometadata/v2/tv_shows/alphabetical"
     query = {"bu": channel, "characterFilter": letter, "pageSize": "unlimited"}
-    response = _srg_get(PATH, query=query)
-    shows = response["showList"]
-    mode = 'listEpisodes'
+    _query_tv_shows(channel, path, query, "showList")
+ 
+   
+def _query_tv_shows(channel, path, query, rootIndex):
+    response = _srg_get(path, query=query)
+    shows = response[rootIndex]
+    nextMode = 'listEpisodes'
 
     for show in shows:
         showid = show.get('id')
@@ -72,7 +85,7 @@ def list_tv_shows_new(channel, letter):
         desc = show.get('description')
         picture = show.get('imageUrl')
         numberOfEpisodes = show.get('numberOfEpisodes')
-        _add_show(title, showid, mode, desc, picture, channel, numberOfEpisodes)
+        _add_show(title, showid, nextMode, desc, picture, channel, numberOfEpisodes)
 
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
@@ -99,7 +112,7 @@ def list_episodes_new(channel, showid, showbackground, pageNumber, numberOfEpiso
             url = media.get('id')
             picture = media.get('imageUrl')
             length = int(media.get('duration', 0)) / 1000 / 60
-            _addLink(title, url, 'playepisode', desc, picture, length, pubdate, showbackground, channel)
+            _addLink(title, url, 'playEpisode', desc, picture, length, pubdate, showbackground, channel)
 
         next_page_url = response.get('next')
         if next_page_url:
@@ -287,15 +300,16 @@ def _open_url(urlstring):
     return response
 
 
-def choose_tv_show_letter(channel):
-    nextMode = 'listTvShows'
-    _add_letter(channel, '#', tr(30019), nextMode)
+def choose_tv_show_option(channel):
+    nextMode = 'listTvShowsByLetter'
+    _add_tv_show_option(channel, '#', tr(30019), nextMode)
     for c in ascii_lowercase:
-        _add_letter(channel, c, c, nextMode)
+        _add_tv_show_option(channel, c, c, nextMode)
+    _add_tv_show_option(channel, '', tr(30021), 'searchTvShows')
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
-def _add_letter(channel, letter, letterDescription, mode):
+def _add_tv_show_option(channel, letter, letterDescription, mode):
     directoryurl = sys.argv[0] + "?mode=" + str(mode) + "&channel=" + str(channel) + "&letter=" + letter
     liz = xbmcgui.ListItem(letterDescription)
     return xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
@@ -378,13 +392,15 @@ nextParam = params.get('next', '')
 if consumerKey == '' or consumerSecret == '':
     xbmcgui.Dialog().ok(tr(30012) + ' / ' + tr(30013), tr(30020))
     addon.openSettings()
-elif mode == 'playepisode':
+elif mode == 'playEpisode':
     play_episode(channel, url)
 elif mode == 'listEpisodes':
     list_episodes_new(channel, url, showbackground, page, numberOfEpisodes, nextParam)
-elif mode == 'listTvShows':
-    list_tv_shows_new(channel, letter)
-elif mode == 'chooseTvShowLetter':
-    choose_tv_show_letter(channel)
+elif mode == 'listTvShowsByLetter':
+    list_tv_shows(channel, letter)
+elif mode == 'searchTvShows':
+    search_tv_shows(channel)
+elif mode == 'chooseTvShowOption':
+    choose_tv_show_option(channel)
 else:
     choose_channel()
