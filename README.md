@@ -1,5 +1,5 @@
 
-# <img src="plugin.video.srgssr_ch_replay/icon.png" width="75" height="75" /> Unofficial SRG SSR Replay (another official Kodi add-on) 
+# <img src="plugin.video.srgssr_ch_replay/resources/icon.png" width="75" height="75" /> Unofficial SRG SSR Replay (another official Kodi add-on) 
 
 ## Add-on description
 The "Unofficial SRG SSR Replay" add-on implements the new [SRG SSR API](https://developer.srgssr.ch/apis) in order to support more channels and upcoming features. Right now all the official channels (SRF, SRF Info, RTS, RSI and RTR) are supported and these TV shows can be listed and streamed.
