@@ -15,8 +15,8 @@
 [New] Search for TV shows
 [New] Bug fixes</news>
 	<assets>
-		<icon>icon.png</icon>
-		<fanart>fanart.png</fanart>
+		<icon>resources/icon.png</icon>
+		<fanart>resources/fanart.png</fanart>
 	</assets>
     <summary lang="en_GB">The unofficial SRG SSR Replay add-on lists and plays TV shows from the channels SRF, SRF Info, RTS, RSI and RTR.</summary>
     <description lang="en_GB">The unofficial SRG SSR Replay add-on lists recorded shows from the SRG SSR over their provided API. The channels SRF, SRF Info, RTS, RSI and RTR are supported. All shows are legally owned by the SRG SSR and will only be streamed over this add-on.
