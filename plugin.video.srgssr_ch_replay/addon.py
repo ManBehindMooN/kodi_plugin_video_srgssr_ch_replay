@@ -20,9 +20,6 @@ import requests
 import base64
 import datetime
 
-#TODO https://forum.kodi.tv/showthread.php?tid=346773
-
-
 #'Base settings'
 #'Start of the plugin functionality is at the end of the file'
 addon = xbmcaddon.Addon()
