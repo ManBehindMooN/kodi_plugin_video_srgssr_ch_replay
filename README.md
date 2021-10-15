@@ -13,7 +13,18 @@ This add-on has been cloned from the [Unofficial SRF Replay](https://kodi.tv/add
 If you experience any problems or you have any suggestions, then please get in touch with us. The preferred way would be to [open an issue](https://github.com/ManBehindMooN/kodi_plugin_video_srgssr_ch_replay/issues) or [have a discussion](https://github.com/ManBehindMooN/kodi_plugin_video_srgssr_ch_replay/discussions) on our Github.
 
 ## Add-on Usage
-The add-on is self-explanatory but it can be used most efficiently in combination with favorites and the right view type. 
+The add-on is self-explanatory but it can be used most efficiently in combination with these recommendations.
+
+### Search TV shows
+A TV show can be found by selecting a a predefined search query which is the first letter of the show. Nothing news worthy so far. Unfortunately not all TV shows are listed specially the discontinued ones. These TV shows can still be found and watched if you select the "Search TV shows" entry at the end of the predefined queries. 
+
+![Search TV shows](pictures/usage4.png)
+
+It is recommended to use at least two letters. As an example if the aim is to find a show named "26 minutes" then just search with "26" or "min" or even "inu" and then press the OK button (unless you want to cancel and make angels cry :-|)
+
+![Search dialog](pictures/usage5.png)
+
+As the results may vary you might find old stuff you were not even aware of its existence. Have fun.
 
 ### Favorites
 When all the TV Shows are listed, just select your favorite show and open the Kodi context menu (press "c" on your keyboard) and select "Add to favorites".
