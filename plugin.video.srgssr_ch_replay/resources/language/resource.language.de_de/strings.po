@@ -8,6 +8,10 @@ msgctxt "#30001"
 msgid "General"
 msgstr "Allgemein"
 
+msgctxt "#30002"
+msgid "Enable subtitle"
+msgstr "Untertitel einschalten"
+
 msgctxt "#30004"
 msgid "Number of episodes shown per page"
 msgstr "Abzahl Austrahlungen pro Seite anzeigen"

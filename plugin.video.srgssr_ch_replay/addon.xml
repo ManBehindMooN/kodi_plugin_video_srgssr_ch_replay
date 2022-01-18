@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.srgssr_ch_replay" name="Unofficial SRG SSR Replay" version="3.0.1" provider-name="Man Behind MooN">
+<addon id="plugin.video.srgssr_ch_replay" name="Unofficial SRG SSR Replay" version="3.0.2" provider-name="Man Behind MooN">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
     <import addon="script.module.requests" version="2.25.1+matrix.1"/>
@@ -12,8 +12,9 @@
 [Info] Official SRG SSR API implemented 
 [Info] All official TV channels supported
 [Info] SRG SSR user account required
-[New] Search for TV shows
-[New] Bug fixes</news>
+[Info] Search for TV shows
+[Info] Bug fixes
+[New] Subtitle can be enabled</news>
 	<assets>
 		<icon>resources/icon.png</icon>
 		<fanart>resources/fanart.png</fanart>

@@ -28,11 +28,14 @@ pluginhandle = int(sys.argv[1])
 socket.setdefaulttimeout(30)
 xbmcplugin.setPluginCategory(pluginhandle, "News")
 xbmcplugin.setContent(pluginhandle, "tvshows")
-addon_work_folder = xbmcvfs.translatePath("special://profile/addon_data/" + addonID)
+addon_work_folder = xbmcvfs.translatePath("special://userdata/addon_data/" + addonID)
 if not os.path.isdir(addon_work_folder):
     os.mkdir(addon_work_folder)
-FavoritesFile = xbmcvfs.translatePath("special://profile/addon_data/" + addonID + "/" + addonID + ".favorites")
+addon_work_folder_subs = addon_work_folder + '/temp_subtitles'    
+if not os.path.isdir(addon_work_folder_subs):
+    os.mkdir(addon_work_folder_subs)
 numberOfEpisodesPerPage = int(addon.getSetting("numberOfShowsPerPage"))
+subtitlesEnabled = addon.getSetting("subtitlesEnabled") == "true"
 consumerKey = addon.getSetting("consumerKey")
 consumerSecret = addon.getSetting("consumerSecret")
 tr = addon.getLocalizedString
@@ -91,13 +94,13 @@ def _query_tv_shows(channel, path, query, rootIndex):
 
 
 def list_episodes(channel, showid, showbackground, pageNumber, numberOfEpisodes, nextParam):
-    PATH = f"/videometadata/v2/latest_episodes/shows/{showid}"
+    path = f"/videometadata/v2/latest_episodes/shows/{showid}"
     query = {"bu": channel}
     if nextParam:
         query.update({"next": nextParam})
     else:
         query.update({"pageSize": numberOfEpisodesPerPage})
-    response = _srg_get(PATH, query=query)
+    response = _srg_get(path, query=query)
     show = response.get('show')
     episodeList = response.get("episodeList")
 
@@ -215,6 +218,24 @@ def play_episode(urn):
         besturl = besturl + '?' + token
 
     listitem = xbmcgui.ListItem(path=besturl)
+    
+    #TODO https://github.com/ManBehindMooN/kodi_plugin_video_srgssr_ch_replay/issues/4
+    #delete addon_work_folder_subs directory content
+    if subtitlesEnabled:
+        path = f'/srgssr-play-subtitles/v1/identifier/{urn}'
+        query = {}
+        # rest call does not work yet
+        # => Error Contents: 500:{"fault":{"faultstring":"Invalid API call as no apiproduct match found","detail":{"errorcode":"keymanagement.service.InvalidAPICallAsNoApiProductMatchFound"}}}
+        # => UnexpectedStatusCodeException: 500:{"fault":{"faultstring":"Invalid API call as no apiproduct match found","detail":{"errorcode":"keymanagement.service.InvalidAPICallAsNoApiProductMatchFound"}}}
+        #subResponse = _srg_get(path, query=query)
+        #xbmc.log(f"subtitle response : {subResponse}")
+        
+        # check if there is/are subtitle(s) for this urn => https://developer.srgssr.ch/apis/srgssr-play-subtitles/docs       
+        # download in addon_work_folder_subs directory and (if needed) transform to srt format
+        # set meta data for subtitle => https://kodi.wiki/view/Audio-video_add-on_tutorial
+        listitem.addStreamInfo('subtitle', {'language': 'en'})
+        # https://alwinesch.github.io/group__python__xbmcgui__listitem.html
+        listitem.setSubtitles([addon_work_folder_subs + '/test.srt'])
     xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
 
 

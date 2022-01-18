@@ -4,6 +4,10 @@
 msgid ""
 msgstr ""
 
+msgctxt "#30002"
+msgid "Enable subtitle"
+msgstr ""
+
 msgctxt "#30001"
 msgid "General"
 msgstr ""
