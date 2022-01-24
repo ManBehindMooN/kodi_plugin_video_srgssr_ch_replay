@@ -2,7 +2,7 @@
 # <img src="plugin.video.srgssr_ch_replay/resources/icon.png" width="75" height="75" /> Unofficial SRG SSR Replay (another official Kodi add-on) 
 
 ## Add-on description
-The "Unofficial SRG SSR Replay" add-on implements the new [SRG SSR API](https://developer.srgssr.ch/apis) in order to support more channels and upcoming features. Right now all the official channels (SRF, SRF Info, RTS, RSI and RTR) are supported and these TV shows can be listed and streamed.
+The "Unofficial SRG SSR Replay" add-on implements the new [SRG SSR API](https://developer.srgssr.ch/apis) in order to support more channels and upcoming features. Right now all the official channels (SRF, SRF Info, RTS, RSI and RTR) are supported and these TV shows can be listed and streamed. Some shows might be regional locked and can only be played by Swiss IP addresses.
 
 Since version 3.0.0 the add-on is in the official [Kodi 19 (Matrix) repository](https://github.com/xbmc/repo-plugins/tree/matrix/plugin.video.srgssr_ch_replay) / [Kodi Add-on Page](https://kodi.tv/addons/matrix/plugin.video.srgssr_ch_replay).
 
@@ -11,6 +11,10 @@ This add-on has been cloned from the [Unofficial SRF Replay](https://kodi.tv/add
 
 ## Feedback for issues/improvements
 If you experience any problems or you have any suggestions, then please get in touch with us. The preferred way would be to [open an issue](https://github.com/ManBehindMooN/kodi_plugin_video_srgssr_ch_replay/issues) or [have a discussion](https://github.com/ManBehindMooN/kodi_plugin_video_srgssr_ch_replay/discussions) on our Github.
+
+### Known issues
+
+* **Subtitles in ttml format**: TV shows that only provide subtitles in the ttml format (mainly the RTS channel) do not work at all as this format is not (yet) supported by Kodi. If you are confronted by that issue and need a solution, let us know.
 
 ## Add-on Usage
 The add-on is self-explanatory but it can be used most efficiently in combination with these recommendations.
@@ -57,12 +61,15 @@ Since version 3.0.0 there is a new mandatory setting.
 
 This new setting allows to connect to the official SRG SSR API. This API is documented and supported by SRG SSR and is more stable on the long run and comes with some advantages (like all SRG SSR TV channels are supported; so check the upcoming new versions you might find some new features :-|).
 
-In order to use the new API a consumer key and secret has to be claimed by each user. Therefore an account needs to be opened and some information need to be provided. Yes really, no way around it. So read the next section carefully.
+In order to use the new API a consumer key and secret has to be claimed by each user and a separate one in order to enable optional subtitles. Therefore an account needs to be opened and some information need to be provided. Yes really, no way around it. So read the next section carefully.
 
-#### Register (private user)
+## Register account as private user
 *If you you are not a private user then please get in touch with the SRG SSR yourself. This registration process is described for private users only.*
 
+### Create account
 Open an account [at SRG SSR here](https://developer.srgssr.ch/user/register) and log in.
+
+### Register for the public API (mandatory)
 
 <kbd>![Register @ SRG SSR](pictures/new_api_register.png)</kbd>
 
@@ -86,7 +93,25 @@ Your consumer key and secret have been created.
 
 Now copy the consumer key and secret to Kodi add-on settings. *Just to let you know. Kodi supports remote apps for Android and iOS and makes it easier for some setups to enter text.*
  
-Ready to go you are! ~Yoda
+Ready to go you are! ~Yoda 
+
+...unless you want to enable the optional subtitles...
+
+### Register for subtitles API (optional)
+
+Go to "My Apps" and press "ADD A NEW APP". Yep, the blue on again.
+
+Then put in
+> subtitles_unofficial_srgssr_replay
+
+> https[]()://kodi.tv/addons/matrix/plugin.video.srgssr_ch_replay
+ 
+and chose
+ * SRGSSR-Play-Subtitles
+ 
+and press "Create App".
+
+Now copy the consumer key and secret for the subtitles to Kodi add-on settings.
 
 
 ## Installation
