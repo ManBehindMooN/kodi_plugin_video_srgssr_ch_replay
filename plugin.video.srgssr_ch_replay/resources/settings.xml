@@ -9,4 +9,7 @@
 		<setting id="consumerKeySubtitles" type="text" label="30023" enable="eq(-1,true)" subsetting="true" />
 		<setting id="consumerSecretSubtitles" type="text" label="30024" enable="eq(-2,true)" subsetting="true" />
 	</category>
+	<category label="30900">
+		<setting id="showInactiveShows" type="bool" label="30901" default="false" />
+	</category>
 </settings>

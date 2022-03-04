@@ -32,6 +32,7 @@ addon_work_folder = xbmcvfs.translatePath("special://userdata/addon_data/" + add
 if not os.path.isdir(addon_work_folder):
     os.mkdir(addon_work_folder)
 numberOfEpisodesPerPage = int(addon.getSetting("numberOfShowsPerPage"))
+onlyActiveShows = not addon.getSetting("showInactiveShows") == "true"
 subtitlesEnabled = addon.getSetting("subtitlesEnabled") == "true"
 consumerKey = addon.getSetting("consumerKey")
 consumerSecret = addon.getSetting("consumerSecret")
@@ -67,7 +68,9 @@ def search_tv_shows(channel):
 
 def list_tv_shows(channel, letter):
     path = "/videometadata/v2/tv_shows/alphabetical"
-    query = {"bu": channel, "characterFilter": letter, "pageSize": "unlimited"}
+    query = {"bu": channel, "characterFilter": letter, "pageSize": "unlimited" }
+    if not onlyActiveShows:
+        query.update({"onlyActiveShows": str(onlyActiveShows)})
     _query_tv_shows(channel, path, query, "showList")
  
    

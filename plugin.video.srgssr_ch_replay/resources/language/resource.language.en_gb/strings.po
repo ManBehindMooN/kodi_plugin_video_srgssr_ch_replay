@@ -91,3 +91,11 @@ msgstr ""
 msgctxt "#30024"
 msgid "Subtitles Consumer Secret"
 msgstr ""
+
+msgctxt "#30900"
+msgid "Experimental"
+msgstr ""
+
+msgctxt "#30901"
+msgid "Show inactive TV shows"
+msgstr ""
