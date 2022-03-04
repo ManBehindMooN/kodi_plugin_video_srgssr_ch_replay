@@ -54,6 +54,9 @@ It is recommended to change from the WideList to the InfoWall view type to get m
 ### General
 No explanation provided. You got so far, we are sure you already figured it out ;)
 
+### Experimental
+Here are undocumented or experimental features. These features might not work or cause problems in the future and it is not guaranteed they will not be removed. Enjoy while they work!
+
 ### Official API
 Since version 3.0.0 there is a new mandatory setting.
 
