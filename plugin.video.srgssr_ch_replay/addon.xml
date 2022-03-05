@@ -15,7 +15,8 @@
 [Info] Search for TV shows
 [Info] Bug fixes
 [Info] Subtitle can be enabled
-[New] Inactive TV shows can be included in the alphabetical search (undocumented &amp; experimental)</news>
+[New] Inactive TV shows can be included in the alphabetical search (undocumented &amp; experimental)
+[New] The letter menu can be disabled (undocumented &amp; experimental)</news>
 	<assets>
 		<icon>resources/icon.png</icon>
 		<fanart>resources/fanart.png</fanart>
