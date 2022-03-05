@@ -32,11 +32,14 @@ addon_work_folder = xbmcvfs.translatePath("special://userdata/addon_data/" + add
 if not os.path.isdir(addon_work_folder):
     os.mkdir(addon_work_folder)
 numberOfEpisodesPerPage = int(addon.getSetting("numberOfShowsPerPage"))
-onlyActiveShows = not addon.getSetting("showInactiveShows") == "true"
 subtitlesEnabled = addon.getSetting("subtitlesEnabled") == "true"
 consumerKey = addon.getSetting("consumerKey")
 consumerSecret = addon.getSetting("consumerSecret")
 tr = addon.getLocalizedString
+#Experimental features
+onlyActiveShows = not addon.getSetting("showInactiveShows") == "true"
+disableLetterMenu = addon.getSetting("disableLetterMenu") == "true"
+
 default_channel = 'srf'
 
 
@@ -65,14 +68,35 @@ def search_tv_shows(channel):
         query = {"bu": channel, "q": searchString}
         _query_tv_shows(channel, path, query, "searchResultListShow")
         
+        xbmcplugin.addSortMethod(pluginhandle, 1)
+        xbmcplugin.endOfDirectory(pluginhandle)
+        xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
+        
+        
+def list_all_tv_shows(channel):
+    for c in '#' + ascii_lowercase:
+        _query_list_tv_shows(channel, c)
+        
+    xbmcplugin.addSortMethod(pluginhandle, 1)
+    xbmcplugin.endOfDirectory(pluginhandle)
+    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True) 
 
-def list_tv_shows(channel, letter):
+
+def list_tv_shows(channel, characterFilter):
+    _query_list_tv_shows(channel, characterFilter)
+        
+    xbmcplugin.addSortMethod(pluginhandle, 1)
+    xbmcplugin.endOfDirectory(pluginhandle)
+    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True) 
+
+
+def _query_list_tv_shows(channel, characterFilter):
     path = "/videometadata/v2/tv_shows/alphabetical"
-    query = {"bu": channel, "characterFilter": letter, "pageSize": "unlimited" }
+    query = {"bu": channel, "characterFilter": characterFilter, "pageSize": "unlimited" }
     if not onlyActiveShows:
-        query.update({"onlyActiveShows": str(onlyActiveShows)})
+        query.update({"onlyActiveShows": "false" })
     _query_tv_shows(channel, path, query, "showList")
- 
+   
    
 def _query_tv_shows(channel, path, query, rootIndex):
     response = _srg_get(path, query=query)
@@ -87,10 +111,6 @@ def _query_tv_shows(channel, path, query, rootIndex):
         numberOfEpisodes = show.get('numberOfEpisodes')
         urn = show.get('urn')
         _add_show(title, showid, urn, nextMode, desc, picture, channel, numberOfEpisodes)
-
-    xbmcplugin.addSortMethod(pluginhandle, 1)
-    xbmcplugin.endOfDirectory(pluginhandle)
-    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
 def list_episodes(channel, showid, showbackground, pageNumber, numberOfEpisodes, nextParam):
@@ -383,6 +403,9 @@ elif mode == 'listTvShowsByLetter':
 elif mode == 'searchTvShows':
     search_tv_shows(channel)
 elif mode == 'chooseTvShowOption':
-    choose_tv_show_option(channel)
+    if disableLetterMenu:
+        list_all_tv_shows(channel)
+    else:
+        choose_tv_show_option(channel)
 else:
     choose_channel()

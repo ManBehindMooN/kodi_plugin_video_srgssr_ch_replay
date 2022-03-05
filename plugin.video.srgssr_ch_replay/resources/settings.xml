@@ -11,5 +11,6 @@
 	</category>
 	<category label="30900">
 		<setting id="showInactiveShows" type="bool" label="30901" default="false" />
+		<setting id="disableLetterMenu" type="bool" label="30902" default="false" />
 	</category>
 </settings>
