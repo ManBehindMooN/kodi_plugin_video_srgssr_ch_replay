@@ -55,12 +55,12 @@ It is recommended to change from the WideList to the InfoWall view type to get m
 No explanation provided. You got so far, we are sure you already figured it out ;)
 
 ### Experimental
-Here are undocumented or experimental features. These features might not work or cause problems in the future and it is not guaranteed they will not be removed. Enjoy while they work!
+Here are undocumented or experimental features. These features might not work or cause problems in the future and it is not guaranteed they will remain. Enjoy while they work!
 
-### Official API
+### Official SRG SSR API
 Since version 3.0.0 there is a new mandatory setting.
 
-![Official API](pictures/new_api_settings.png)
+![SRG SSR API](pictures/new_api_settings.png)
 
 This new setting allows to connect to the official SRG SSR API. This API is documented and supported by SRG SSR and is more stable on the long run and comes with some advantages (like all SRG SSR TV channels are supported; so check the upcoming new versions you might find some new features :-|).
 

@@ -140,7 +140,7 @@ def list_episodes(channel, showid, showbackground, pageNumber, numberOfEpisodes,
         if next_page_url:
             numberOfPages = int((numberOfEpisodesPerPage - 1 + numberOfEpisodes) / numberOfEpisodesPerPage)
             next_param = urllib.parse.parse_qs(urllib.parse.urlparse(next_page_url).query).get('next')[0]
-            _addnextpage(tr(30005).format(pageNumber, numberOfPages or '?'), showid, 'listEpisodes', '', showbackground, pageNumber + 1, channel, numberOfEpisodes, next_param)
+            _addnextpage(tr(30020).format(pageNumber, numberOfPages or '?'), showid, 'listEpisodes', '', showbackground, pageNumber + 1, channel, numberOfEpisodes, next_param)
 
     xbmcplugin.endOfDirectory(pluginhandle)
 
@@ -170,7 +170,7 @@ def _srg_api_auth_token(tokenPrefix):
     key = addon.getSetting(f"consumerKey{tokenPrefix}")
     secret = addon.getSetting(f"consumerSecret{tokenPrefix}")
     if key == '' or secret == '':
-        xbmcgui.Dialog().ok(tr(30006), tr(30020))
+        xbmcgui.Dialog().ok(tr(30099), tr(30098))
         addon.openSettings()
     headers = {"Authorization": "Basic " + str(base64.b64encode(f"{key}:{secret}".encode("utf-8")), "utf-8")}
     try:
@@ -299,7 +299,7 @@ def _open_url(urlstring):
             response = StringIO(f.read())
     except Exception as e:
         xbmc.log(traceback.format_exc())
-        xbmcgui.Dialog().ok(tr(30006), str(e.__class__.__name__), str(e))
+        xbmcgui.Dialog().ok(tr(30099), str(e.__class__.__name__), str(e))
     return response
 
 
@@ -327,7 +327,6 @@ def _add_show(name, url, urn, mode, desc, iconimage, channel, numberOfEpisodes):
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconimage, 'banner': iconimage, 'fanart': iconimage, 'thumb': iconimage})
-    # TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722) # pylint: disable=W0511
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
     xbmcplugin.setContent(pluginhandle, 'tvshows')
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
@@ -342,7 +341,6 @@ def _addLink(name, url, urn, mode, desc, iconurl, length, pubdate, showbackgroun
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconurl, 'banner': iconurl, 'fanart': showbackground, 'thumb': iconurl})
-    # TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722) # pylint: disable=W0511
     liz.setInfo(type='Video', infoLabels={"Title": name, "Duration": length, "Plot": desc, "Aired": pubdate})
     liz.setProperty('IsPlayable', 'true')
     xbmcplugin.setContent(pluginhandle, 'episodes')
@@ -358,7 +356,6 @@ def _addnextpage(name, url, mode, desc, showbackground, pageNumber, channel, num
         "&page=" + str(pageNumber or "") + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes or "") + "&next=" + str(nextParam)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
-    # TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722) # pylint: disable=W0511
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
     xbmcplugin.setContent(pluginhandle, 'episodes')
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
@@ -395,7 +392,7 @@ def main():
     nextParam = params.get('next', '')
 
     if consumerKey == '' or consumerSecret == '':
-        xbmcgui.Dialog().ok(tr(30012) + ' / ' + tr(30013), tr(30020))
+        xbmcgui.Dialog().ok(tr(30101) + ' / ' + tr(30102), tr(30098))
         addon.openSettings()
     elif mode == 'playEpisode':
         play_episode(urn, channel, url)
