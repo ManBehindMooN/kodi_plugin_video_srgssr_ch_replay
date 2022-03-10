@@ -36,8 +36,8 @@ subtitlesEnabled = addon.getSetting("subtitlesEnabled") == "true"
 consumerKey = addon.getSetting("consumerKey")
 consumerSecret = addon.getSetting("consumerSecret")
 tr = addon.getLocalizedString
-#Experimental features
-onlyActiveShows = not addon.getSetting("showInactiveShows") == "true"
+# Experimental features
+onlyActiveShows = addon.getSetting("showInactiveShows") == "false"
 disableLetterMenu = addon.getSetting("disableLetterMenu") == "true"
 
 default_channel = 'srf'
@@ -67,37 +67,37 @@ def search_tv_shows(channel):
         path = "/videometadata/v2/tv_shows"
         query = {"bu": channel, "q": searchString}
         _query_tv_shows(channel, path, query, "searchResultListShow")
-        
+
         xbmcplugin.addSortMethod(pluginhandle, 1)
         xbmcplugin.endOfDirectory(pluginhandle)
         xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
-        
-        
+
+
 def list_all_tv_shows(channel):
     for c in '#' + ascii_lowercase:
         _query_list_tv_shows(channel, c)
-        
+
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True) 
+    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
 def list_tv_shows(channel, characterFilter):
     _query_list_tv_shows(channel, characterFilter)
-        
+
     xbmcplugin.addSortMethod(pluginhandle, 1)
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True) 
+    xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
 def _query_list_tv_shows(channel, characterFilter):
     path = "/videometadata/v2/tv_shows/alphabetical"
-    query = {"bu": channel, "characterFilter": characterFilter, "pageSize": "unlimited" }
+    query = {"bu": channel, "characterFilter": characterFilter, "pageSize": "unlimited"}
     if not onlyActiveShows:
-        query.update({"onlyActiveShows": "false" })
+        query.update({"onlyActiveShows": "false"})
     _query_tv_shows(channel, path, query, "showList")
-   
-   
+
+
 def _query_tv_shows(channel, path, query, rootIndex):
     response = _srg_get(path, query=query)
     shows = response[rootIndex]
@@ -177,7 +177,7 @@ def _srg_api_auth_token(tokenPrefix):
         r = _http_request(SRG_API_HOST, 'POST', "/oauth/v1/accesstoken", query=query, headers=headers, exp_code=200)
     except UnexpectedStatusCodeException as e:
         if e.status_code in [401, 403]:
-            xbmc.log(f"Authentication failed -> No API token")
+            xbmc.log("Authentication failed -> No API token")
         raise e
     access_token = r.json()["access_token"]
     addon.setSetting(f'srgssr{tokenPrefix}Token', access_token)
@@ -185,7 +185,7 @@ def _srg_api_auth_token(tokenPrefix):
     return access_token
 
 
-def _srg_get(path, query, tokenPrefix = ""):
+def _srg_get(path, query, tokenPrefix=""):
     def _get_with_token(path, query):
         token = _srg_api_auth_token(tokenPrefix)
         if token:
@@ -212,9 +212,11 @@ class UnexpectedStatusCodeException(Exception):
         super().__init__(message)
 
 
-def _http_request(host, method, path, query=None, headers={}, body_dict=None, exp_code=None):
+def _http_request(host, method, path, query=None, headers=None, body_dict=None, exp_code=None):
     uri = f'https://{host}{path}'
     xbmc.log(f"request: {method} {uri}")
+    if headers is None:
+        headers = {}
     res = requests.request(method, uri, params=query, headers=headers, json=body_dict)
     if exp_code:
         if type(exp_code) is not list:
@@ -228,15 +230,15 @@ def _addSubtitles(listitem, channel, showid):
     if subtitlesEnabled:
         path = f'/srgssr-play-subtitles/v1/identifier/urn:{channel}:episode:tv:{showid}'
         subResponse = _srg_get(path, {}, 'Subtitles')
-        
+
         subs = []
         for asset in subResponse["data"]["assets"]:
-            if  asset is not None:
+            if asset is not None:
                 for sub in asset["hasSubtitling"]:
                     subs.append(sub["identifier"])
-                    
+
         listitem.setSubtitles(subs)
-            
+
 
 #####################################
 # Common methods
@@ -261,10 +263,10 @@ def play_episode(urn, channel, showid):
     xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
 
 
-def _parse_integrationplayer_2(urn):   
+def _parse_integrationplayer_2(urn):
     integrationlayerUrl = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/{urn}.json'
     response = json.load(_open_url(integrationlayerUrl))
-    
+
     resourceList = response['chapterList'][0]['resourceList']
     sdHlsUrls = []
     for play in resourceList:
@@ -273,14 +275,14 @@ def _parse_integrationplayer_2(urn):
                 return _remove_params(play['url'])
             else:
                 sdHlsUrls.append(play)
-        
+
     if not sdHlsUrls:
         return _remove_params(resourceList[0]['url'])
     else:
         return _remove_params(sdHlsUrls[0]['url'])
 
 
-def _remove_params(url):  
+def _remove_params(url):
     parsed = urlparse(url)
     return f'{parsed.scheme}://{parsed.netloc}{parsed.path}'
 
@@ -320,12 +322,12 @@ def _add_show(name, url, urn, mode, desc, iconimage, channel, numberOfEpisodes):
     """
     helper method to create a folder with subitems
     """
-    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) +"&urn=" + str(urn) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + \
+    directoryurl = sys.argv[0] + "?url=" + urllib.parse.quote_plus(url) + "&urn=" + str(urn) + "&mode=" + str(mode) + "&showbackground=" + urllib.parse.quote_plus(iconimage) + \
         "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes or "")
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconimage, 'banner': iconimage, 'fanart': iconimage, 'thumb': iconimage})
-    #TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
+    # TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722) # pylint: disable=W0511
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
     xbmcplugin.setContent(pluginhandle, 'tvshows')
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
@@ -340,7 +342,7 @@ def _addLink(name, url, urn, mode, desc, iconurl, length, pubdate, showbackgroun
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
     liz.setArt({'poster': iconurl, 'banner': iconurl, 'fanart': showbackground, 'thumb': iconurl})
-    #TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
+    # TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722) # pylint: disable=W0511
     liz.setInfo(type='Video', infoLabels={"Title": name, "Duration": length, "Plot": desc, "Aired": pubdate})
     liz.setProperty('IsPlayable', 'true')
     xbmcplugin.setContent(pluginhandle, 'episodes')
@@ -356,7 +358,7 @@ def _addnextpage(name, url, mode, desc, showbackground, pageNumber, channel, num
         "&page=" + str(pageNumber or "") + "&channel=" + str(channel) + "&numberOfEpisodes=" + str(numberOfEpisodes or "") + "&next=" + str(nextParam)
     liz = xbmcgui.ListItem(name)
     liz.setLabel2(desc)
-    #TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722)
+    # TODO setInfo might become deprecated (see comments https://github.com/xbmc/repo-plugins/pull/3722) # pylint: disable=W0511
     liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
     xbmcplugin.setContent(pluginhandle, 'episodes')
     ok = xbmcplugin.addDirectoryItem(pluginhandle, url=directoryurl, listitem=liz, isFolder=True)
@@ -380,32 +382,36 @@ def _parameters_string_to_dict(parameters):
 #####################################
 # Start
 #####################################
-params = _parameters_string_to_dict(sys.argv[2])
-mode = params.get('mode', '')
-url = params.get('url', '')
-urn = params.get('urn', '')
-showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
-page = int(params.get('page', 1))
-channel = params.get('channel', default_channel)
-letter = params.get('letter', '')
-numberOfEpisodes = int(params.get('numberOfEpisodes', 0))
-nextParam = params.get('next', '')
+def main():
+    params = _parameters_string_to_dict(sys.argv[2])
+    mode = params.get('mode', '')
+    url = params.get('url', '')
+    urn = params.get('urn', '')
+    showbackground = urllib.parse.unquote_plus(params.get('showbackground', ''))
+    page = int(params.get('page', 1))
+    channel = params.get('channel', default_channel)
+    letter = params.get('letter', '')
+    numberOfEpisodes = int(params.get('numberOfEpisodes', 0))
+    nextParam = params.get('next', '')
 
-if consumerKey == '' or consumerSecret == '':
-    xbmcgui.Dialog().ok(tr(30012) + ' / ' + tr(30013), tr(30020))
-    addon.openSettings()
-elif mode == 'playEpisode':
-    play_episode(urn, channel, url)
-elif mode == 'listEpisodes':
-    list_episodes(channel, url, showbackground, page, numberOfEpisodes, nextParam)
-elif mode == 'listTvShowsByLetter':
-    list_tv_shows(channel, letter)
-elif mode == 'searchTvShows':
-    search_tv_shows(channel)
-elif mode == 'chooseTvShowOption':
-    if disableLetterMenu:
-        list_all_tv_shows(channel)
+    if consumerKey == '' or consumerSecret == '':
+        xbmcgui.Dialog().ok(tr(30012) + ' / ' + tr(30013), tr(30020))
+        addon.openSettings()
+    elif mode == 'playEpisode':
+        play_episode(urn, channel, url)
+    elif mode == 'listEpisodes':
+        list_episodes(channel, url, showbackground, page, numberOfEpisodes, nextParam)
+    elif mode == 'listTvShowsByLetter':
+        list_tv_shows(channel, letter)
+    elif mode == 'searchTvShows':
+        search_tv_shows(channel)
+    elif mode == 'chooseTvShowOption':
+        if disableLetterMenu:
+            list_all_tv_shows(channel)
+        else:
+            choose_tv_show_option(channel)
     else:
-        choose_tv_show_option(channel)
-else:
-    choose_channel()
+        choose_channel()
+
+
+main()
