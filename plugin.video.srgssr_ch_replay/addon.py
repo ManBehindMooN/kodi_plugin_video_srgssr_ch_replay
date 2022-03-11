@@ -20,8 +20,8 @@ import requests
 import base64
 import datetime
 
-#'Base settings'
-#'Start of the plugin functionality is at the end of the file'
+# 'Base settings'
+# 'Start of the plugin functionality is at the end of the file'
 addon = xbmcaddon.Addon()
 addonID = 'plugin.video.srgssr_ch_replay'
 pluginhandle = int(sys.argv[1])
@@ -41,7 +41,6 @@ onlyActiveShows = addon.getSetting("showInactiveShows") == "false"
 disableLetterMenu = addon.getSetting("disableLetterMenu") == "true"
 
 default_business_unit = 'srf'
-
 
 #####################################
 # NEW SRG SSR API methods
@@ -186,6 +185,7 @@ def _srg_api_auth_token(tokenPrefix):
 
 
 def _srg_get(path, query, tokenPrefix=""):
+
     def _get_with_token(path, query):
         token = _srg_api_auth_token(tokenPrefix)
         if token:
@@ -207,6 +207,7 @@ def _srg_get(path, query, tokenPrefix=""):
 
 
 class UnexpectedStatusCodeException(Exception):
+
     def __init__(self, status_code, message):
         self.status_code = status_code
         super().__init__(message)
@@ -239,10 +240,10 @@ def _addSubtitles(listitem, bu, showid):
 
         listitem.setSubtitles(subs)
 
-
 #####################################
 # Common methods
 #####################################
+
 
 def play_episode(urn, bu, showid):
     """
@@ -299,7 +300,7 @@ def _open_url(urlstring):
             response = StringIO(f.read())
     except Exception as e:
         xbmc.log(traceback.format_exc())
-        xbmcgui.Dialog().ok(tr(30099), str(e.__class__.__name__), str(e))
+        xbmcgui.Dialog().ok(tr(30099), str(e))
     return response
 
 
