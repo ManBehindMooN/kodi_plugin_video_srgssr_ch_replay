@@ -86,7 +86,7 @@ msgstr "Experimentell"
 
 msgctxt "#30901"
 msgid "Show inactive TV shows"
-msgstr "Inaktive Sendungen anzeigen""
+msgstr "Inaktive Sendungen anzeigen"
 
 msgctxt "#30902"
 msgid "Disable letter menu"
