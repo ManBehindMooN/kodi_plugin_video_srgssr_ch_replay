@@ -157,10 +157,26 @@ def _srg_api_get_simple(path, *, query=None, bearer, exp_code=None):
     return _http_request(SRG_API_HOST, 'GET', path, query, headers, None, exp_code)
 
 
+def _convert_string_to_datetime(string_date, format):
+    """
+    Calling datetime.datetime.strptime(...) can result in a "TypeError attribute of type 'NoneType' is not callable"-Error
+    Workaround from: https://bugs.python.org/issue27400#msg269379
+    """
+    try:
+        conv_date = datetime.datetime.strptime(string_date, format)
+    except TypeError:
+        import time
+        conv_date = datetime.datetime.fromtimestamp(time.mktime(time.strptime(string_date, format)))
+    return conv_date
+
+
 def _srg_api_auth_token(tokenPrefix):
     token_ts = addon.getSetting(f'srgssr{tokenPrefix}TokenTS')
     if token_ts:
-        delta_ts = datetime.datetime.utcnow() - datetime.datetime.fromisoformat(token_ts)
+        # Example token_ts content: "2022-03-19T20:44:33.171996"
+        dt_token_ts = _convert_string_to_datetime(token_ts, "%Y-%m-%dT%H:%M:%S.%f")
+        dt_now = datetime.datetime.utcnow()
+        delta_ts = dt_now - dt_token_ts
         token = addon.getSetting(f'srgssr{tokenPrefix}Token')
         if delta_ts < datetime.timedelta(days=25) and token:
             return token
