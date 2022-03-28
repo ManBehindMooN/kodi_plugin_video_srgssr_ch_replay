@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.srgssr_ch_replay" name="Unofficial SRG SSR Replay" version="3.0.3" provider-name="Man Behind MooN">
+<addon id="plugin.video.srgssr_ch_replay" name="Unofficial SRG SSR Replay" version="3.0.4" provider-name="Man Behind MooN">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
     <import addon="script.module.requests" version="2.25.1+matrix.1"/>
@@ -8,15 +8,16 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-	 <news>[Info] Cloned from "Unofficial SRF Replay" and rebranded
-[Info] Official SRG SSR API implemented 
-[Info] All official TV channels supported
-[Info] SRG SSR user account required
-[Info] Search for TV shows
-[Info] Bug fixes
-[Info] Subtitle can be enabled
-[New] Inactive TV shows can be included in the alphabetical search (undocumented &amp; experimental)
-[New] The letter menu can be disabled (undocumented &amp; experimental)</news>
+	 <news>[3.0.0] Cloned from "Unofficial SRF Replay" and rebranded
+[3.0.0] Official SRG SSR API implemented 
+[3.0.0] All official TV channels supported
+[3.0.0] SRG SSR user account required
+[3.0.1] Search for TV shows
+[3.0.1] Bug fixes
+[3.0.2] Subtitle can be enabled
+[3.0.3] Inactive TV shows can be included in the alphabetical search (undocumented &amp; experimental)
+[3.0.3] The letter menu can be disabled (undocumented &amp; experimental)
+[3.0.4] Search by genre (undocumented &amp; experimental)</news>
 	<assets>
 		<icon>resources/icon.png</icon>
 		<fanart>resources/fanart.png</fanart>
