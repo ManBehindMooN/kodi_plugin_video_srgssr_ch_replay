@@ -8,6 +8,7 @@ import xbmcplugin
 import xbmcgui
 import xbmcaddon
 import xbmcvfs
+import inputstreamhelper
 import os
 import traceback
 from io import StringIO
@@ -240,6 +241,26 @@ def _addSubtitles(listitem, bu, showid):
 
         listitem.setSubtitles(subs)
 
+
+def _set_inputstream_params(listitem):
+    """If Inputstream Adaptive is available, configure it"""
+    PROTOCOL = "hls"
+    MIME_TYPE = "application/x-mpegURL"
+    KODI_VERSION_MAJOR = int(xbmc.getInfoLabel('System.BuildVersion').split('.')[0])
+
+    is_helper = inputstreamhelper.Helper(PROTOCOL)
+    if is_helper.check_inputstream():
+        listitem.setContentLookup(False)
+        listitem.setMimeType(MIME_TYPE)
+
+        if KODI_VERSION_MAJOR >= 19:
+            listitem.setProperty('inputstream', is_helper.inputstream_addon)
+        else:
+            listitem.setProperty('inputstreamaddon', is_helper.inputstream_addon)
+        listitem.setProperty("inputstream.adaptive.manifest_type", PROTOCOL)
+        listitem.setProperty("isPlayable", "true")
+
+
 #####################################
 # Common methods
 #####################################
@@ -260,9 +281,10 @@ def play_episode(urn, bu, showid):
         besturl = besturl + '?' + token
 
     listitem = xbmcgui.ListItem(path=besturl)
+    _set_inputstream_params(listitem)
     _addSubtitles(listitem, bu, showid)
     xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
-
+    
 
 def _parse_integrationplayer_2(urn):
     integrationlayerUrl = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/{urn}.json'
