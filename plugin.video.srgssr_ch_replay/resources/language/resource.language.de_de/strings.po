@@ -80,6 +80,10 @@ msgctxt "#30201"
 msgid "Number of episodes shown per page"
 msgstr "Abzahl Austrahlungen pro Seite anzeigen"
 
+msgctxt "#30202"
+msgid "Enable Inputstream Adaptive"
+msgstr "Inputstream Adaptive einschalten"
+
 msgctxt "#30900"
 msgid "Experimental"
 msgstr "Experimentell"

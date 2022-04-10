@@ -18,7 +18,7 @@
 [3.0.2] Subtitle can be enabled
 [3.0.3] Inactive TV shows can be included in the alphabetical search (undocumented &amp; experimental)
 [3.0.3] The letter menu can be disabled (undocumented &amp; experimental)
-[3.0.4] Search by genre (undocumented &amp; experimental)</news>
+[3.0.4] Inputstream Adaptive can be activated and is used when available</news>
 	<assets>
 		<icon>resources/icon.png</icon>
 		<fanart>resources/fanart.png</fanart>
