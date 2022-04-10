@@ -228,86 +228,45 @@ def _http_request(host, method, path, query=None, headers=None, body_dict=None, 
     return res
 
 
-def _addSubtitles(listitem, bu, showid):
-    if subtitlesEnabled:
-        path = f'/srgssr-play-subtitles/v1/identifier/urn:{bu}:episode:tv:{showid}'
-        subResponse = _srg_get(path, {}, 'Subtitles')
-
-        subs = []
-        for asset in subResponse["data"]["assets"]:
-            if asset is not None:
-                for sub in asset["hasSubtitling"]:
-                    subs.append(sub["identifier"])
-
-        listitem.setSubtitles(subs)
-
-
-def _set_inputstream_params(listitem):
-    """If Inputstream Adaptive is available, configure it"""
-    PROTOCOL = "hls"
-    MIME_TYPE = "application/x-mpegURL"
-    KODI_VERSION_MAJOR = int(xbmc.getInfoLabel('System.BuildVersion').split('.')[0])
-
-    is_helper = inputstreamhelper.Helper(PROTOCOL)
-    if is_helper.check_inputstream():
-        listitem.setContentLookup(False)
-        listitem.setMimeType(MIME_TYPE)
-
-        if KODI_VERSION_MAJOR >= 19:
-            listitem.setProperty('inputstream', is_helper.inputstream_addon)
-        else:
-            listitem.setProperty('inputstreamaddon', is_helper.inputstream_addon)
-        listitem.setProperty("inputstream.adaptive.manifest_type", PROTOCOL)
-        listitem.setProperty("isPlayable", "true")
-
-
-#####################################
-# Common methods
-#####################################
-
-
 def play_episode(urn, bu, showid):
     """
     this method plays the selected episode
     """
 
-    besturl = _parse_integrationplayer_2(urn)
+    resource = _get_media_resource(urn)
+    parsedUrl = urlparse(resource['url'])
+    besturl =  f'{parsedUrl.scheme}://{parsedUrl.netloc}{parsedUrl.path}'
 
     # add authentication token for akamaihd
-    if "akamaihd" in urlparse(besturl).netloc:
-        url = "http://tp.srgssr.ch/akahd/token?acl=" + urlparse(besturl).path
-        response = json.load(_open_url(url))
+    if "akamaihd" in parsedUrl.netloc:
+        tokenUrl = f'http://tp.srgssr.ch/akahd/token?acl={parsedUrl.path}'
+        response = _open_url(tokenUrl)
         token = response["token"]["authparams"]
         besturl = besturl + '?' + token
 
     listitem = xbmcgui.ListItem(path=besturl)
-    _set_inputstream_params(listitem)
+    _set_inputstream_params(listitem, resource['protocol'].lower(), resource['mimeType'])
     _addSubtitles(listitem, bu, showid)
     xbmcplugin.setResolvedUrl(pluginhandle, True, listitem)
-    
 
-def _parse_integrationplayer_2(urn):
+
+def _get_media_resource(urn):
     integrationlayerUrl = f'https://il.srgssr.ch/integrationlayer/2.0/mediaComposition/byUrn/{urn}.json'
-    response = json.load(_open_url(integrationlayerUrl))
+    response = _open_url(integrationlayerUrl)
 
     resourceList = response['chapterList'][0]['resourceList']
-    sdHlsUrls = []
-    for play in resourceList:
-        if play['protocol'] == 'HLS':
-            if play['quality'] == 'HD':
-                return _remove_params(play['url'])
+    sdHlsResources = []
+    for resource in resourceList:
+        if resource['protocol'] == 'HLS':
+            if resource['quality'] == 'HD':
+                return resource
             else:
-                sdHlsUrls.append(play)
+                sdHlsResources.append(resource)
 
-    if not sdHlsUrls:
-        return _remove_params(resourceList[0]['url'])
+    if not sdHlsResources:
+        return resourceList[0]
     else:
-        return _remove_params(sdHlsUrls[0]['url'])
-
-
-def _remove_params(url):
-    parsed = urlparse(url)
-    return f'{parsed.scheme}://{parsed.netloc}{parsed.path}'
+        return sdHlsResources[0]
 
 
 def _open_url(urlstring):
@@ -323,7 +282,33 @@ def _open_url(urlstring):
     except Exception as e:
         xbmc.log(traceback.format_exc())
         xbmcgui.Dialog().ok(tr(30099), str(e))
-    return response
+    return json.load(response)
+
+
+def _addSubtitles(listitem, bu, showid):
+    if subtitlesEnabled:
+        path = f'/srgssr-play-subtitles/v1/identifier/urn:{bu}:episode:tv:{showid}'
+        subResponse = _srg_get(path, {}, 'Subtitles')
+
+        subs = []
+        for asset in subResponse["data"]["assets"]:
+            if asset is not None:
+                for sub in asset["hasSubtitling"]:
+                    subs.append(sub["identifier"])
+
+        listitem.setSubtitles(subs)
+
+
+def _set_inputstream_params(listitem, protocol, mimeType):
+    """If Inputstream Adaptive is available, configure it"""
+
+    is_helper = inputstreamhelper.Helper(protocol)
+    if is_helper.check_inputstream():
+        listitem.setContentLookup(False)
+        listitem.setMimeType(mimeType)
+        listitem.setProperty('inputstream', is_helper.inputstream_addon)
+        listitem.setProperty("inputstream.adaptive.manifest_type", protocol)
+        listitem.setProperty("isPlayable", "true")
 
 
 def choose_tv_show_option(bu):
