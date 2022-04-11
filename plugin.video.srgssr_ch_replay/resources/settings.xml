@@ -1,17 +1,17 @@
 <settings>
 	<category label="30100">
-		<setting id="consumerKey" type="text" label="30101" />
-		<setting id="consumerSecret" type="text" label="30102" />
-		<setting id="subtitlesEnabled" type="bool" label="30103" default="false" />
-		<setting id="consumerKeySubtitles" type="text" label="30104" enable="eq(-1,true)" subsetting="true" />
-		<setting id="consumerSecretSubtitles" type="text" label="30105" enable="eq(-2,true)" subsetting="true" />
+		<setting id="consumer_key" type="text" label="30101" />
+		<setting id="consumer_secret" type="text" label="30102" />
+		<setting id="subtitles_enabled" type="bool" label="30103" default="false" />
+		<setting id="consumer_key_subtitles" type="text" label="30104" enable="eq(-1,true)" subsetting="true" />
+		<setting id="consumer_secret_subtitles" type="text" label="30105" enable="eq(-2,true)" subsetting="true" />
 	</category>
 	<category label="30200">
-		<setting id="numberOfShowsPerPage" type="number" label="30201" default="10" />
-		<setting id="enableInputstreamAdaptive" type="bool" label="30202" default="false" />
+		<setting id="number_of_episodes_per_page" type="number" label="30201" default="10" />
+		<setting id="enable_inputstream_adaptive" type="bool" label="30202" default="false" />
 	</category>
 	<category label="30900">
-		<setting id="showInactiveShows" type="bool" label="30901" default="false" />
-		<setting id="disableLetterMenu" type="bool" label="30902" default="false" />
+		<setting id="show_inactive_shows" type="bool" label="30901" default="false" />
+		<setting id="disable_letter_menu" type="bool" label="30902" default="false" />
 	</category>
 </settings>
