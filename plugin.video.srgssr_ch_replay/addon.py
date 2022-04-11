@@ -26,17 +26,20 @@ import datetime
 addon = xbmcaddon.Addon()
 addonID = 'plugin.video.srgssr_ch_replay'
 pluginhandle = int(sys.argv[1])
-socket.setdefaulttimeout(30)
 xbmcplugin.setPluginCategory(pluginhandle, "News")
 xbmcplugin.setContent(pluginhandle, "tvshows")
 addon_work_folder = xbmcvfs.translatePath("special://userdata/addon_data/" + addonID)
 if not os.path.isdir(addon_work_folder):
     os.mkdir(addon_work_folder)
-numberOfEpisodesPerPage = int(addon.getSetting("numberOfShowsPerPage"))
-subtitlesEnabled = addon.getSetting("subtitlesEnabled") == "true"
+socket.setdefaulttimeout(30)
+tr = addon.getLocalizedString
+# SRG SSR API
 consumerKey = addon.getSetting("consumerKey")
 consumerSecret = addon.getSetting("consumerSecret")
-tr = addon.getLocalizedString
+subtitlesEnabled = addon.getSetting("subtitlesEnabled") == "true"
+# General
+numberOfEpisodesPerPage = int(addon.getSetting("numberOfShowsPerPage"))
+enableInputstreamAdaptive = addon.getSetting("enableInputstreamAdaptive") == "true"
 # Experimental features
 onlyActiveShows = addon.getSetting("showInactiveShows") == "false"
 disableLetterMenu = addon.getSetting("disableLetterMenu") == "true"
@@ -303,7 +306,7 @@ def _set_inputstream_params(listitem, protocol, mimeType):
     """If Inputstream Adaptive is available, configure it"""
 
     is_helper = inputstreamhelper.Helper(protocol)
-    if is_helper.check_inputstream():
+    if enableInputstreamAdaptive and is_helper.check_inputstream():
         listitem.setContentLookup(False)
         listitem.setMimeType(mimeType)
         listitem.setProperty('inputstream', is_helper.inputstream_addon)

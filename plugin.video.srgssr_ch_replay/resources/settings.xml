@@ -8,6 +8,7 @@
 	</category>
 	<category label="30200">
 		<setting id="numberOfShowsPerPage" type="number" label="30201" default="10" />
+		<setting id="enableInputstreamAdaptive" type="bool" label="30202" default="false" />
 	</category>
 	<category label="30900">
 		<setting id="showInactiveShows" type="bool" label="30901" default="false" />
