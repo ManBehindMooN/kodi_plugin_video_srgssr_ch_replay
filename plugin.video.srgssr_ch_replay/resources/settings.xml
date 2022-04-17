@@ -7,8 +7,9 @@
 		<setting id="consumer_secret_subtitles" type="text" label="30105" enable="eq(-2,true)" subsetting="true" />
 	</category>
 	<category label="30200">
-		<setting id="number_of_episodes_per_page" type="number" label="30201" default="10" />
-		<setting id="enable_inputstream_adaptive" type="bool" label="30202" default="true" />
+		<setting id="default_bu" type="labelenum" label="30201" lvalues="30202|30014|30015|30016|30017|30018" />
+		<setting id="number_of_episodes_per_page" type="number" label="30203" default="10" />
+		<setting id="enable_inputstream_adaptive" type="bool" label="30204" default="true" />
 	</category>
 	<category label="30900">
 		<setting id="show_inactive_shows" type="bool" label="30901" default="false" />

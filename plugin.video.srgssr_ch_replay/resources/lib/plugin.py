@@ -95,6 +95,13 @@ class Plugin:
         mode = params.get("mode", "")
         bu = params.get("channel")
 
+        # check if default BU is set in the settings
+        if not mode and self.settings.default_bu != self.tr(30202):
+            mode = "chooseTvShowOption"
+            bu = self.settings.default_bu.lower()
+
+        self.logger.debug(f"Mode: {mode}, BU:{bu}")
+
         if mode == "playEpisode":
             episode_id = params.get("episodeId", "")
             media_id = params.get("mediaId", "")

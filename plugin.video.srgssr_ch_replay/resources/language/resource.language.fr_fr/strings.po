@@ -85,10 +85,18 @@ msgid "General"
 msgstr "Général"
 
 msgctxt "#30201"
+msgid "Default Business Unit"
+msgstr "Business Unit par défaut"
+
+msgctxt "#30202"
+msgid "Choose in the Addon"
+msgstr "Sélectionner dans l'Addon"
+
+msgctxt "#30203"
 msgid "Number of episodes shown per page"
 msgstr "Nombre d'épisodes affichés par page"
 
-msgctxt "#30202"
+msgctxt "#30204"
 msgid "Enable Inputstream Adaptive"
 msgstr "Activer l'Inputstrea Adaptive"
 
