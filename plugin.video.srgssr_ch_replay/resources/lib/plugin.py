@@ -1,16 +1,20 @@
+import requests
 from string import ascii_lowercase
 import sys
+import os
+from typing import Tuple
 from urllib.parse import urlencode, parse_qsl, quote_plus, urlparse
 
 import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcplugin
+import xbmcvfs
 import inputstreamhelper
 
 from resources.lib.settings import Settings
 from resources.lib.logger import Logger
-from resources.lib.srgssr_video_api_client import SRGSSRVideoApiClient
+from resources.lib.srgssr_api_client import SRGSSRVideoApiClient, SRGSSRSubtitlesApiClient, InvalidCredentialsException
 
 
 class Plugin:
@@ -32,21 +36,54 @@ class Plugin:
         xbmcplugin.setPluginCategory(self.HANDLE, "News")
         xbmcplugin.setContent(self.HANDLE, "tvshows")
 
-        # Check that DownDog account credentials are passed
-        while self.settings.consumer_key == "" or self.settings.consumer_secret == "":
-            xbmcgui.Dialog().ok(self.tr(31001), self.tr(31002))
-            self.ADDON.openSettings()
+        self._create_work_folder()
 
-        self.vclient = SRGSSRVideoApiClient(
+        try:
+            self.video_client, self.subs_client = self._create_api_clients()
+        except InvalidCredentialsException as exc:
+            xbmcgui.Dialog().ok(self.tr(30096).format(exc.api_name), self.tr(30097))
+            sys.exit(1)
+
+    def _create_work_folder(self):
+        """Creating the addon work folder"""
+        try:
+            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo('profile')).decode('utf-8')
+        except AttributeError:
+            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo('profile'))
+        
+        if not os.path.isdir(userdata_path):
+            os.mkdir(userdata_path)
+
+    def _create_api_clients(self) -> Tuple[SRGSSRVideoApiClient, SRGSSRSubtitlesApiClient]:
+        """Creates and returns the Video and Subtitles API clients"""
+        self._check_api_credentials_set("consumer_key", "consumer_secret")
+        video_client = SRGSSRVideoApiClient(
             self.SRG_API_BASE_URL,
             {"key": self.settings.consumer_key, "secret": self.settings.consumer_secret},
             self,
         )
-   
+        
+        subs_client = None
+        if self.settings.enable_subtitles == "true":
+            self._check_api_credentials_set("consumer_key_subtitles", "consumer_secret_subtitles")
+            subs_client = SRGSSRSubtitlesApiClient(
+                self.SRG_API_BASE_URL,
+                {"key": self.settings.consumer_key_subtitles, "secret": self.settings.consumer_secret_subtitles},
+                self,
+            )
+
+        return (video_client, subs_client)
+
+    def _check_api_credentials_set(self, key_setting: str, secret_setting: str):
+        """Checks that Video or Subtitles API credentials are set, and open the settings if not"""
+        while getattr(self.settings, key_setting) == "" or getattr(self.settings, secret_setting) == "":
+            xbmcgui.Dialog().ok(self.tr(30099), self.tr(30098))
+            self.ADDON.openSettings()
+
     def run(self):
         """Plugin main method"""
         self.logger.info("Starting SRGSSR plugin")
-        self.router(sys.argv[2][1:])    # passes the params (without the ?) to the router
+        self.router(sys.argv[2][1:])    # passes the url params to the router
         self.logger.info("End of SRGSSR plugin")
 
     def router(self, paramstring: str):
@@ -59,8 +96,9 @@ class Plugin:
         bu = params.get("channel")
 
         if mode == "playEpisode":
+            episode_id = params.get("episodeId", "")
             media_id = params.get("mediaId", "")
-            self.play_episode(bu, media_id)
+            self.play_episode(bu, episode_id, media_id)
         elif mode == "listEpisodes":
             tvshow_id = params.get("tvShowId")
             current_page = int(params.get("currentPage", 1))
@@ -115,7 +153,7 @@ class Plugin:
         nextMode = "listEpisodes"
         xbmcplugin.setContent(self.HANDLE, "tvshows")
 
-        shows = self.vclient.get_tv_shows(bu, char_filter)["showList"]
+        shows = self.video_client.get_tv_shows(bu, char_filter)["showList"]
         for show in shows:
             image_url = show.get("imageUrl", "")
             
@@ -149,10 +187,10 @@ class Plugin:
         :param next_page_id: ID of the next page of episodes
         """
         xbmcplugin.setContent(self.HANDLE, "episodes")
+
         number_of_episodes_per_page = int(self.settings.number_of_episodes_per_page)
+        res = self.video_client.get_latest_episodes(bu, tvshow_id, number_of_episodes_per_page, next_page_id)
         
-        self.logger.debug(f"Next page url from router: {next_page_id}")
-        res = self.vclient.get_latest_episodes(bu, tvshow_id, number_of_episodes_per_page, next_page_id)
         show = res.get("show")
         episodes = res.get("episodeList")
 
@@ -163,6 +201,7 @@ class Plugin:
                 url_args = {
                     "channel": bu,
                     "mode": "playEpisode",
+                    "episodeId": episode.get("id"),
                     "mediaId": media.get("id"),
                 }
                 
@@ -179,7 +218,6 @@ class Plugin:
             next_page_url = res.get("next")
             if next_page_url:
                 next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
-                self.logger.debug(f"NEXT from API: {next_page_id}")
                 number_of_pages = int((number_of_episodes_per_page - 1 + number_of_episodes) / number_of_episodes_per_page)
                 self._add_next_page_to_directory(
                     name=self.tr(30020).format(current_page, number_of_pages or "?"),
@@ -189,25 +227,23 @@ class Plugin:
         
         xbmcplugin.endOfDirectory(self.HANDLE, succeeded=True)
     
-    def play_episode(self, bu: str, media_id: str):
+    def play_episode(self, bu: str, episode_id: str, media_id: str):
         """Plays the selected episode
         :param bu: Business Unit (either 'srf', 'rtr', 'swi', 'rts', 'rsi')
+        :param episode_id: The episode ID
         :param media_id: The media ID
         """
-        media_composition = self.vclient.get_media_composition(bu, media_id)
+        media_composition = self.video_client.get_media_composition(bu, media_id)
         resource = self._get_media_resource(media_composition)
-        parsed_url = urlparse(resource["url"])
-        media_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
-
-        # TODO: How auth works? DRM? 
+        media_url = self._get_media_url(resource["url"])
 
         liz = xbmcgui.ListItem(path=media_url)
         liz.setProperty("isPlayable", "true")
         self._set_inputstream_params(liz, resource["protocol"].lower(), resource["mimeType"])
-        # TODO: add subtitles
+        self._add_subtitles(liz, bu, episode_id)
+        self.logger.debug(f"Playing episode {bu} {media_id} (media URL: {media_url})")
         xbmcplugin.setResolvedUrl(self.HANDLE, True, liz)
 
-    
     def _get_media_resource(self, media_composition) -> dict:
         """Parses the media composition object to find the best resource and return it"""
         resourceList = media_composition["chapterList"][0]["resourceList"]
@@ -224,15 +260,43 @@ class Plugin:
         else:
             return sdHlsResources[0]
 
-    def _set_inputstream_params(self, listitem, protocol, mimeType):
-        """If Inputstream Adaptive is available, configure it"""
+    def _get_media_url(self, resource_url: str) -> str:
+        """Parses the resource URL and constructs the media URL from it"""
+        parsed_url = urlparse(resource_url)
+        media_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
 
+        # add authentication token for akamaihd
+        if "akamaihd" in parsed_url.netloc:
+            self.logger.debug("AkamaiHD video")
+            token_url = f"http://tp.srgssr.ch/akahd/token?acl={parsed_url.path}"
+            response = requests.get(token_url).json()
+            token = response["token"]["authparams"]
+            media_url += "?" + token
+        return media_url
+
+    def _set_inputstream_params(self, listitem, protocol, mimeType):
+        """If Inputstream Adaptive is available, configure it and update the ListItem"""
         is_helper = inputstreamhelper.Helper(protocol)
-        if self.settings.enable_inputstream_adaptive and is_helper.check_inputstream():
+        if self.settings.enable_inputstream_adaptive == "true" and is_helper.check_inputstream():
             listitem.setContentLookup(False)
             listitem.setMimeType(mimeType)
             listitem.setProperty("inputstream", is_helper.inputstream_addon)
             listitem.setProperty("inputstream.adaptive.manifest_type", protocol)
+
+    def _add_subtitles(self, listitem, bu, video_id):
+        """If subtitles are enable and available, add them to the ListItem"""
+        if self.settings.enable_subtitles == "true":
+            video_urn = f"urn:{bu}:episode:tv:{video_id}"
+            resp = self.subs_client.get_subtitles(video_urn)
+
+            subs = []
+            for asset in resp["data"]["assets"]:
+                if asset is not None:
+                    for sub in asset["hasSubtitling"]:
+                        subs.append(sub["identifier"])
+            if subs:
+                self.logger.debug(f"Found subtitles: {subs}")
+                listitem.setSubtitles(subs)
 
 
     # ================================= Helper methods ==================================

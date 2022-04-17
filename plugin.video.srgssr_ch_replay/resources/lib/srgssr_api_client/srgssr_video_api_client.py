@@ -7,7 +7,8 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
     """Video API client"""
 
     _VERSION = "v2"
-    _API_NAME = "videometadata"
+    _API_NAME = "Video"
+    _API_URL_NAME = "videometadata"
 
     @SRGSSRApiClient._renew_access_token
     def get_tv_shows(self, bu: str, character_filter: str, only_active_shows: bool = True):

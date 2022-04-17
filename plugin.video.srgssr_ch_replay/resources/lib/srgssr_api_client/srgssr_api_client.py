@@ -9,7 +9,11 @@ from requests import Response
 
 
 class SRGSSRApiException(Exception):
-    pass
+    
+    def __init__(self, api_name: str, message: str):
+        self.api_name = api_name
+        self.message = message
+        super().__init__(message)
 
 class InvalidCredentialsException(SRGSSRApiException):
     pass
@@ -22,7 +26,8 @@ class SRGSSRApiClient:
     """SRGSSR API Client Base Class"""
 
     _VERSION = None     # The API version (e.g. "v1")
-    _API_NAME = None    # The API name (present in the API URL, e.g. "videometadata")
+    _API_NAME = None    # The API name (e.g. Video, Subtitles)
+    _API_URL_NAME = None    # The API URL name (present in the API URL, e.g. "videometadata")
 
     def __init__(self, base_url: str, creds: dict, plugin, verify: bool = True):
         """API Client creation
@@ -55,6 +60,12 @@ class SRGSSRApiClient:
             raise NotImplementedError(f"_API_NAME attribute must be overriden in the subclass {self.__class__}")
         return self._API_NAME
 
+    @property
+    def api_url_name(self):
+        if self._API_URL_NAME is None:
+            raise NotImplementedError(f"_API_URL_NAME attribute must be overriden in the subclass {self.__class__}")
+        return self._API_URL_NAME
+
     def get_auth_token(self) -> str:
         """Returning the authorization token
         
@@ -77,9 +88,9 @@ class SRGSSRApiClient:
         params = {"grant_type": "client_credentials"}
         res = requests.post(os.path.join(self._base_url, "oauth/v1/accesstoken"),params=params, auth=self._basic_auth)
         if res.status_code in [401, 403]:
-            raise InvalidCredentialsException("Invalid key/secret to access the API")
+            raise InvalidCredentialsException(self.api_name, "Invalid key/secret to access the API")
         if not res.ok:
-            raise SRGSSRApiException(f"Error{res.status_code}: {res.content}")
+            raise SRGSSRApiException(self.api_name, f"Error{res.status_code}: {res.content}")
         
         data = res.json()
         token = data["access_token"]
@@ -109,16 +120,16 @@ class SRGSSRApiClient:
         """Errors handling + returning json response"""
         if res.status_code in [401, 403]:
             self._logger.error(f"Error{res.status_code}: Invalid token. {res.content}")
-            raise InvalidTokenException()
+            raise InvalidTokenException(self.api_name)
         if not res.ok:
             msg = f"Error{res.status_code}: {res.content}"
             self._logger.error(msg)
-            raise SRGSSRApiException(msg)
+            raise SRGSSRApiException(self.api_name, msg)
         return res.json()
 
     def _url(self, path: str) -> str:
         """Constructs the API url"""
-        return os.path.join(self._base_url, self.api_name, self.version, path)
+        return os.path.join(self._base_url, self.api_url_name, self.version, path)
     
     @property
     def _headers(self) -> dict:

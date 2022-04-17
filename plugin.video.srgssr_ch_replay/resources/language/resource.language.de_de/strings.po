@@ -40,13 +40,21 @@ msgctxt "#30022"
 msgid "Enter a TV show name to search for"
 msgstr "Einen Sendungsname eingeben für die Suche"
 
+msgctxt "#30096"
+msgid "Incorrect '{0} API' credentials"
+msgstr "TODO"
+
+msgctxt "#30097"
+msgid "Please check they are correctly entered in the addon settings"
+msgstr "TODO"
+
 msgctxt "#30098"
 msgid "In order to use this add-on a consumer key & secret in your add-on settings must be provided.[CR]See instructions: [B]https://github.com/ManBehindMooN/[CR]kodi_plugin_video_srgssr_ch_replay[/B][CR][CR]Sorry for the inconvenience."
 msgstr "Um das Add-on benutzen zu können braucht es Consumer Keys & Secrets in den Add-on Settings.[CR]Instruktionen unter: [B]https://github.com/ManBehindMooN/[CR]kodi_plugin_video_srgssr_ch_replay[/B][CR][CR]Sorry für die Umstände."
 
 msgctxt "#30099"
-msgid "Unexpected error"
-msgstr "Unerwarteter Fehler"
+msgid "API credentials missing"
+msgstr "TODO"
 
 msgctxt "#30100"
 msgid "SRG SSR API"

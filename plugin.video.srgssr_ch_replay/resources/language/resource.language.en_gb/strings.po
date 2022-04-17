@@ -40,12 +40,21 @@ msgctxt "#30022"
 msgid "Enter a TV show name to search for"
 msgstr ""
 
+msgctxt "#30096"
+msgid "Incorrect '{0} API' credentials"
+msgstr ""
+
+msgctxt "#30097"
+msgid "Please check they are correctly entered in the addon settings"
+msgstr ""
+
+
 msgctxt "#30098"
 msgid "In order to use this add-on a consumer key & secret in your add-on settings must be provided.[CR]See instructions: [B]https://github.com/ManBehindMooN/[CR]kodi_plugin_video_srgssr_ch_replay[/B][CR][CR]Sorry for the inconvenience."
 msgstr ""
 
 msgctxt "#30099"
-msgid "Unexpected error"
+msgid "API credentials missing"
 msgstr ""
 
 msgctxt "#30100"
