@@ -32,10 +32,7 @@ class Plugin:
         self.tr = self.ADDON.getLocalizedString
 
         self.logger = Logger(self)
-
-        xbmcplugin.setPluginCategory(self.HANDLE, "News")
         xbmcplugin.setContent(self.HANDLE, "tvshows")
-
         self._create_work_folder()
 
         try:
@@ -96,9 +93,9 @@ class Plugin:
         bu = params.get("channel")
 
         # check if default BU is set in the settings
-        if not mode and self.settings.default_bu != self.tr(30202):
+        if not mode and self.settings.default_bu != "choose":
             mode = "chooseTvShowOption"
-            bu = self.settings.default_bu.lower()
+            bu = self.settings.default_bu
 
         self.logger.debug(f"Mode: {mode}, BU:{bu}")
 
@@ -141,8 +138,9 @@ class Plugin:
     def choose_tv_show_option(self, bu: str):
         """List the letters to filter tv shows"""
         nextMode = "listTvShowsByLetter"
-        url_args = {"channel": bu, "mode": nextMode}
+        xbmcplugin.setPluginCategory(self.HANDLE, bu.upper())
 
+        url_args = {"channel": bu, "mode": nextMode}
         url_args.update({"letter": "#"})
         self._add_menu_to_directory(self.tr(30019), url_args)
         
@@ -158,7 +156,7 @@ class Plugin:
     def list_tv_shows(self, bu: str, char_filter: str):
         """Lists the TV shows filtered by the first letter"""
         nextMode = "listEpisodes"
-        xbmcplugin.setContent(self.HANDLE, "tvshows")
+        xbmcplugin.setPluginCategory(self.HANDLE, bu.upper())
 
         shows = self.video_client.get_tv_shows(bu, char_filter, (self.settings.show_inactive_shows == "false"))["showList"]
         for show in shows:
@@ -194,6 +192,7 @@ class Plugin:
         :param next_page_id: ID of the next page of episodes
         """
         xbmcplugin.setContent(self.HANDLE, "episodes")
+        xbmcplugin.setPluginCategory(self.HANDLE, bu.upper())
 
         number_of_episodes_per_page = int(self.settings.number_of_episodes_per_page)
         res = self.video_client.get_latest_episodes(bu, tvshow_id, number_of_episodes_per_page, next_page_id)
