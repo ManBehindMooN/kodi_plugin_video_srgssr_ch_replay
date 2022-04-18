@@ -160,7 +160,7 @@ class Plugin:
         nextMode = "listEpisodes"
         xbmcplugin.setContent(self.HANDLE, "tvshows")
 
-        shows = self.video_client.get_tv_shows(bu, char_filter)["showList"]
+        shows = self.video_client.get_tv_shows(bu, char_filter, (self.settings.show_inactive_shows == "false"))["showList"]
         for show in shows:
             image_url = show.get("imageUrl", "")
             
