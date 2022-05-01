@@ -1,6 +1,5 @@
 """SRGSSR Video API Client"""
 
-from requests import Response
 from .srgssr_api_client import SRGSSRApiClient
 
 class SRGSSRVideoApiClient(SRGSSRApiClient):
