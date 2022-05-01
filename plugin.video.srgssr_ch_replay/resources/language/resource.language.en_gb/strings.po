@@ -45,7 +45,7 @@ msgid "Incorrect '{0} API' credentials"
 msgstr ""
 
 msgctxt "#30097"
-msgid "Please check they are correctly entered in the addon settings"
+msgid "Please check they are correctly entered in the add-on settings"
 msgstr ""
 
 
