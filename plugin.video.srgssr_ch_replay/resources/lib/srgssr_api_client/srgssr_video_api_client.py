@@ -2,6 +2,7 @@
 
 from .srgssr_api_client import SRGSSRApiClient
 
+
 class SRGSSRVideoApiClient(SRGSSRApiClient):
     """Video API client"""
 
@@ -19,14 +20,16 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
         params = {
             "bu": bu,
             "characterFilter": character_filter,
-            "pageSize": "unlimited",    # Getting all the shows
+            "pageSize": "unlimited",  # Getting all the shows
             "onlyActiveShows": only_active_shows,
         }
         resp = self._get("tv_shows/alphabetical", params=params)
         return self._returning_func(resp)
 
     @SRGSSRApiClient._renew_access_token
-    def get_latest_episodes(self, bu: str, tvshow_id: str, page_size: int = -1, next_page_id: str = ""):
+    def get_latest_episodes(
+        self, bu: str, tvshow_id: str, page_size: int = -1, next_page_id: str = ""
+    ):
         """Getting the latest episodes of a show
         :param bu: Business Unit (either 'srf', 'rtr', 'swi', 'rts', 'rsi')
         :param tvshow_id: The id of the show
@@ -38,7 +41,7 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
             params.update({"pageSize": page_size})
         if next_page_id:
             params.update({"next": next_page_id})
-        
+
         resp = self._get(f"latest_episodes/shows/{tvshow_id}", params=params)
         return self._returning_func(resp)
 

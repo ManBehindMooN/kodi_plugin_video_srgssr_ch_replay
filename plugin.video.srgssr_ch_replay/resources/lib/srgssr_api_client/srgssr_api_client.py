@@ -1,22 +1,22 @@
 """SRGSSR Base API Client"""
 
 import os
-import requests
 from datetime import datetime, timedelta
+import requests
 from requests.auth import HTTPBasicAuth
 from requests import Response
 
 
-
 class SRGSSRApiException(Exception):
-    
     def __init__(self, api_name: str, message: str):
         self.api_name = api_name
         self.message = message
         super().__init__(message)
 
+
 class InvalidCredentialsException(SRGSSRApiException):
     pass
+
 
 class InvalidTokenException(SRGSSRApiException):
     pass
@@ -25,9 +25,9 @@ class InvalidTokenException(SRGSSRApiException):
 class SRGSSRApiClient:
     """SRGSSR API Client Base Class"""
 
-    _VERSION = None     # The API version (e.g. "v1")
-    _API_NAME = None    # The API name (e.g. Video, Subtitles)
-    _API_URL_NAME = None    # The API URL name (present in the API URL, e.g. "videometadata")
+    _VERSION = None  # The API version (e.g. "v1")
+    _API_NAME = None  # The API name (e.g. Video, Subtitles)
+    _API_URL_NAME = None  # The API URL name (present in the API URL, e.g. videometadata)
 
     def __init__(self, base_url: str, creds: dict, plugin, verify: bool = True):
         """API Client creation
@@ -51,24 +51,30 @@ class SRGSSRApiClient:
     @property
     def version(self):
         if self._VERSION is None:
-            raise NotImplementedError(f"_VERSION attribute must be overriden in the subclass {self.__class__}")
+            raise NotImplementedError(
+                f"_VERSION attribute must be overriden in the subclass {self.__class__}"
+            )
         return self._VERSION
-    
+
     @property
     def api_name(self):
         if self._API_NAME is None:
-            raise NotImplementedError(f"_API_NAME attribute must be overriden in the subclass {self.__class__}")
+            raise NotImplementedError(
+                f"_API_NAME attribute must be overriden in the subclass {self.__class__}"
+            )
         return self._API_NAME
 
     @property
     def api_url_name(self):
         if self._API_URL_NAME is None:
-            raise NotImplementedError(f"_API_URL_NAME attribute must be overriden in the subclass {self.__class__}")
+            raise NotImplementedError(
+                f"_API_URL_NAME attribute must be overriden in the subclass {self.__class__}"
+            )
         return self._API_URL_NAME
 
     def get_auth_token(self) -> str:
         """Returning the authorization token
-        
+
         Trying to get the auth token from the plugin settings. If it doesn't
         exists, request a new one"""
         token_exp = getattr(self._plugin.settings, f"srgssr_{self.api_name}_token_exp")
@@ -86,12 +92,16 @@ class SRGSSRApiClient:
         self._logger.debug("Requesting new AuthToken")
 
         params = {"grant_type": "client_credentials"}
-        res = requests.post(os.path.join(self._base_url, "oauth/v1/accesstoken"),params=params, auth=self._basic_auth)
+        res = requests.post(
+            os.path.join(self._base_url, "oauth/v1/accesstoken"),
+            params=params,
+            auth=self._basic_auth,
+        )
         if res.status_code in [401, 403]:
             raise InvalidCredentialsException(self.api_name, "Invalid key/secret to access the API")
         if not res.ok:
             raise SRGSSRApiException(self.api_name, f"Error{res.status_code}: {res.content}")
-        
+
         data = res.json()
         token = data["access_token"]
         expires_in = data["expires_in"]
@@ -103,24 +113,27 @@ class SRGSSRApiClient:
 
         return token
 
+    @staticmethod
     def _renew_access_token(func):
         """Decorator for API calls. Automatically renews the access token if expired"""
+
         def wrapper(self, *args, **kwargs):
             try:
                 return func(self, *args, **kwargs)
             except InvalidTokenException:
                 # Invoke the code responsible for get a new token
                 self.request_new_token()
-                
+
                 # once the token is refreshed, we can retry the operation
                 return func(self, *args, **kwargs)
+
         return wrapper
 
     def _returning_func(self, res: Response) -> dict:
         """Errors handling + returning json response"""
         if res.status_code in [401, 403]:
             self._logger.error(f"Error{res.status_code}: Invalid token. {res.content}")
-            raise InvalidTokenException(self.api_name)
+            raise InvalidTokenException(self.api_name, "Invalid Auth Token")
         if not res.ok:
             msg = f"Error{res.status_code}: {res.content}"
             self._logger.error(msg)
@@ -130,7 +143,7 @@ class SRGSSRApiClient:
     def _url(self, path: str) -> str:
         """Constructs the API url"""
         return os.path.join(self._base_url, self.api_url_name, self.version, path)
-    
+
     @property
     def _headers(self) -> dict:
         return {
@@ -139,10 +152,10 @@ class SRGSSRApiClient:
         }
 
     # =============================== Generic http methods ==============================
-    
+
     def _get(self, path: str, **kwargs) -> Response:
         return self._generic_http_method_request("get", path, **kwargs)
-    
+
     def _post(self, path: str, **kwargs) -> Response:
         return self._generic_http_method_request("post", path, **kwargs)
 

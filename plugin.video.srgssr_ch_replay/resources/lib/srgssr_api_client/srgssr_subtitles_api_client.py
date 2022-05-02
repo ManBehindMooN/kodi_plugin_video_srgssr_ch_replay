@@ -2,6 +2,7 @@
 
 from .srgssr_api_client import SRGSSRApiClient
 
+
 class SRGSSRSubtitlesApiClient(SRGSSRApiClient):
     """Subtitles API client"""
 
