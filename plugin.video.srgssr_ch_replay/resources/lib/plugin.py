@@ -1,4 +1,3 @@
-import requests
 from string import ascii_lowercase
 import sys
 import os
@@ -17,7 +16,11 @@ from resources.lib.utils import to_bool
 from resources.lib.settings import Settings
 from resources.lib.router import Router
 from resources.lib.logger import Logger
-from resources.lib.srgssr_api_client import SRGSSRVideoApiClient, SRGSSRSubtitlesApiClient, InvalidCredentialsException
+from resources.lib.srgssr_api_client import (
+    SRGSSRVideoApiClient,
+    SRGSSRSubtitlesApiClient,
+    InvalidCredentialsException,
+)
 
 
 MainMenuItem = namedtuple("MainMenuItem", ["name", "url", "icon"])
@@ -53,10 +56,12 @@ class Plugin:
     def _create_work_folder(self):
         """Creating the addon work folder"""
         try:
-            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo('profile')).decode('utf-8')
+            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo("profile")).decode(
+                "utf-8"
+            )
         except AttributeError:
-            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo('profile'))
-        
+            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo("profile"))
+
         if not os.path.isdir(userdata_path):
             os.mkdir(userdata_path)
 
@@ -65,16 +70,22 @@ class Plugin:
         self._check_api_credentials_set("consumer_key", "consumer_secret")
         video_client = SRGSSRVideoApiClient(
             self.SRG_API_BASE_URL,
-            {"key": self.settings.consumer_key, "secret": self.settings.consumer_secret},
+            {
+                "key": self.settings.consumer_key,
+                "secret": self.settings.consumer_secret,
+            },
             self,
         )
-        
+
         subs_client = None
         if to_bool(self.settings.enable_subtitles):
             self._check_api_credentials_set("consumer_key_subtitles", "consumer_secret_subtitles")
             subs_client = SRGSSRSubtitlesApiClient(
                 self.SRG_API_BASE_URL,
-                {"key": self.settings.consumer_key_subtitles, "secret": self.settings.consumer_secret_subtitles},
+                {
+                    "key": self.settings.consumer_key_subtitles,
+                    "secret": self.settings.consumer_secret_subtitles,
+                },
                 self,
             )
 
@@ -82,7 +93,10 @@ class Plugin:
 
     def _check_api_credentials_set(self, key_setting: str, secret_setting: str):
         """Checks that Video or Subtitles API credentials are set, and open the settings if not"""
-        while getattr(self.settings, key_setting) == "" or getattr(self.settings, secret_setting) == "":
+        while (
+            getattr(self.settings, key_setting) == ""
+            or getattr(self.settings, secret_setting) == ""
+        ):
             xbmcgui.Dialog().ok(self.tr(30099), self.tr(30098))
             self.ADDON.openSettings()
 
@@ -174,9 +188,9 @@ class Plugin:
         self.logger.debug("Builds TV Shows Menu")
         for show in shows:
             image_url = show.get("imageUrl", "")
-            
+
             description = show.get("description")
-            if not description:     # sometimes lead contains info
+            if not description:  # sometimes lead contains info
                 description = show.get("lead", "")
 
             url_args = {
@@ -223,7 +237,7 @@ class Plugin:
         if show and episodes:
             for episode in episodes:
                 media = episode.get("mediaList")[0]
-                
+
                 url_args = {
                     "video_id": episode.get("id"),
                     "media_id": media.get("id"),
@@ -232,17 +246,20 @@ class Plugin:
                 self._add_video_to_directory(
                     name=episode.get("title", "") + " - " + media.get("title", ""),
                     desc=media.get("description", ""),
-                    length=int(media.get("duration", 0)/1000/60),
+                    length=int(media.get("duration", 0) / 1000 / 60),
                     pubdate=episode.get("publishedDate", ""),
                     tv_show_image_url=show.get("imageUrl", ""),
                     image_url=episode.get("imageUrl", ""),
                     url=self.router.url(mode="play_video", **url_args),
                 )
-            
+
             next_page_url = res.get("next")
             if next_page_url:
                 next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
-                number_of_pages = int((number_of_episodes_per_page - 1 + number_of_episodes) / number_of_episodes_per_page)
+                number_of_pages = int(
+                    (number_of_episodes_per_page - 1 + number_of_episodes)
+                    / number_of_episodes_per_page
+                )
                 self._add_next_page_to_directory(
                     name=self.tr(30020).format(current_page, number_of_pages or "?"),
                     desc=str(current_page + 1),
@@ -324,7 +341,6 @@ class Plugin:
                 self.logger.debug(f"Found subtitles: {subs}")
                 listitem.setSubtitles(subs)
 
-
     # ================================= Helper methods ==================================
 
     def _add_menu_to_directory(self, name: str, url: str, icon: str = ""):
@@ -345,7 +361,14 @@ class Plugin:
         """Helper method that adds a tv_show Item to the xbmcplugin Directory"""
         
         liz = xbmcgui.ListItem(name, desc)
-        liz.setArt({"poster": image_url, "banner": image_url, "fanart": image_url, "thumb": image_url})
+        liz.setArt(
+            {
+                "poster": image_url,
+                "banner": image_url,
+                "fanart": image_url,
+                "thumb": image_url,
+            }
+        )
         liz.setInfo(type="video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
         xbmcplugin.addDirectoryItem(
             self.HANDLE,

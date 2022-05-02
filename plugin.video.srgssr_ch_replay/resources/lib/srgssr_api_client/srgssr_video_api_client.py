@@ -2,6 +2,7 @@
 
 from .srgssr_api_client import SRGSSRApiClient
 
+
 class SRGSSRVideoApiClient(SRGSSRApiClient):
     """Video API client"""
 
@@ -19,7 +20,7 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
         params = {
             "bu": bu,
             "characterFilter": character_filter,
-            "pageSize": "unlimited",    # Getting all the shows
+            "pageSize": "unlimited",  # Getting all the shows
             "onlyActiveShows": only_active_shows,
         }
         resp = self._get("tv_shows/alphabetical", params=params)
