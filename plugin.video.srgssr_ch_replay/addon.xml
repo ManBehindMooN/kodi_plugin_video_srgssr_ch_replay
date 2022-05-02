@@ -31,6 +31,9 @@ In order to stream the shows a SRG SSR account has to be created. The instructio
     <description lang="de_DE">Das inoffizielle SRG SSR Replay Add-on zeigt aufgezeichneten Sendungen der SRG SSR über das zur Verfügung gestellte API. Es werden die Sender SRF, SRF Info, RTS, RSI und RTR unterstützt. Alle Sendungen gehören der SRG SSR und werden vom Add-on lediglich gestreamt. Einige Sendungen können auf Regionen beschränkt sein und nur mit Schweizer IP Adressen abgespielt werden.
 Um die Sendungen streamen zu können, muss ein Konto bei der SRG SSR erstellt werden. Die Anleitung dazu können in der README.md (https://github.com/ManBehindMooN/[CR]kodi_plugin_video_srgssr_ch_replay) entnommen werden.</description>
     <disclaimer lang="de_DE">Dieses Add-on ist nicht offiziell von der SRG SSR und es bestehen keinerlei Support-Ansprüche. Das Add-on benutzt die von der SRG SSR offiziell zur Verfügung gestellten Schnittstellen.</disclaimer>
+    <summary lang="fr_FR">L'add-on non officiel SRG SSR Replay permet de lister et visionner des émissions TV de la SRF, SRF Info, RTS, RSI et RTR.</summary>
+    <description lang="fr_FR">L'add-on non officiel SRG SSR Replay liste les émissions TV de la SRG SSR à l'aide de l'API fournie. Sont supportés la SRF, SRF Info, RTS, RSI et RTR. Toutes les émissions appartiennent légalement à la SRG SSR et sont uniquement streamées sur cet add-on. Il est possible que certaines émissions soient régionalement bloquées et qu'elles ne soient que visionables avec une adresse IP suisse.</description>
+    <disclaimer lang="fr_FR">Cet add-on n'est pas cautionné par la SRG SSR et aucun support ne peut leur être demandé. Cet add-on utilise l'API officielle de la SRG SSR.</disclaimer>
     <language>de</language>
     <platform>all</platform>
     <license>GPL-2.0-or-later</license>
