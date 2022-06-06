@@ -129,7 +129,7 @@ class SRGSSRApiClient:
 
         return wrapper
 
-    def _returning_func(self, res: Response) -> dict:
+    def _handle_response(self, res: Response) -> dict:
         """Errors handling + returning json response"""
         if res.status_code in [401, 403]:
             self._logger.error(f"Error{res.status_code}: Invalid token. {res.content}")

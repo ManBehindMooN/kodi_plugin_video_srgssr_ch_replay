@@ -11,7 +11,7 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
     _API_URL_NAME = "videometadata"
 
     @SRGSSRApiClient._renew_access_token
-    def get_tv_shows(self, bu: str, character_filter: str = "", only_active_shows: bool = True) -> dict:
+    def get_tv_shows(self, bu: str, character_filter: str = "", string_filter: str = "", only_active_shows: bool = True) -> dict:
         """Fetching the TV Shows list. Can be filtered by the first letter
         :param bu: Business Unit (either 'srf', 'rtr', 'swi', 'rts', 'rsi')
         :param character_filter: First letter of the shows. If not speficied, returns all the shows
@@ -19,12 +19,22 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
         """
         params = {
             "bu": bu,
-            "characterFilter": character_filter,
-            "pageSize": "unlimited",  # Getting all the shows
-            "onlyActiveShows": only_active_shows,
         }
-        resp = self._get("tv_shows/alphabetical", params=params)
-        return self._returning_func(resp)
+
+        url = "tv_shows"
+
+        if string_filter:
+            params.update({"q": string_filter})
+        else:
+            params.update({
+                "characterFilter": character_filter,
+                "onlyActiveShows": only_active_shows,
+                "pageSize": "unlimited",  # Getting all the shows
+            })
+            url += "/alphabetical"
+
+        resp = self._get(url, params=params)
+        return self._handle_response(resp)
 
     @SRGSSRApiClient._renew_access_token
     def get_topics(self, bu: str) -> dict:
@@ -33,7 +43,7 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
         """
         params = {"bu": bu}
         resp = self._get("tv_topics", params=params)
-        return self._returning_func(resp)
+        return self._handle_response(resp)
 
     @SRGSSRApiClient._renew_access_token
     def get_latest_episodes(self, bu: str, tv_show_id: str = "", topic_id: str = "", page_size: int = -1, next_page_id: str = "") -> dict:
@@ -57,7 +67,22 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
             url = f"latest_topics/{topic_id}"
 
         resp = self._get(url, params=params)
-        return self._returning_func(resp)
+        return self._handle_response(resp)
+
+    @SRGSSRApiClient._renew_access_token
+    def search_video(self, bu: str, search_string: str = "", page_size: int = -1, next_page_id: str = "") -> dict:
+        """Search videos matching the search string"""
+        params = {
+            "bu": bu,
+            "q": search_string,
+        }
+        if page_size > 0 and not next_page_id:
+            params.update({"pageSize": page_size})
+        if next_page_id:
+            params.update({"next": next_page_id})
+        
+        resp = self._get("search", params=params)
+        return self._handle_response(resp)
 
     @SRGSSRApiClient._renew_access_token
     def get_media_composition(self, bu: str, video_id: str) -> dict:
@@ -68,4 +93,4 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
         params = {"bu": bu}
 
         resp = self._get(f"{video_id}/mediaComposition", params=params)
-        return self._returning_func(resp)
+        return self._handle_response(resp)

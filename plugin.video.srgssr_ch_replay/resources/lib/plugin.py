@@ -153,13 +153,13 @@ class Plugin:
     def bu_menu(self):
         """Builds the Business Units Menu"""
         for bu in self._bu_menu_items():
-            self._add_menu_to_directory(bu.name, bu.url, bu.icon)
+            self._add_item_to_directory(bu.name, url=bu.url, thumbnailImage=bu.icon, is_folder=True)
         xbmcplugin.endOfDirectory(self.HANDLE)
 
     def main_menu(self):
         """Builds the Main Menu"""
         for menu in self._main_menu_items():
-            self._add_menu_to_directory(menu.name, menu.url, menu.icon)
+            self._add_item_to_directory(menu.name, menu.url, thumbnailImage=menu.icon, is_folder=True)
         xbmcplugin.endOfDirectory(self.HANDLE)
 
     def all_tv_shows(self):
@@ -171,18 +171,22 @@ class Plugin:
         
     def tv_shows_by_letter(self, letter: str = ""):
         if not letter:
-            self._add_menu_to_directory(self.tr(30019), self.router.url(mode="shows_by_letters", **{"letter": "#"}))
+            self._add_item_to_directory(self.tr(30019), self.router.url(mode="shows_by_letters", **{"letter": "#"}), is_folder=True)
             
             for char in ascii_lowercase:
-                self._add_menu_to_directory(char, self.router.url(mode="shows_by_letters", **{"letter": char}))
+                self._add_item_to_directory(char, self.router.url(mode="shows_by_letters", **{"letter": char}), is_folder=True)
         else:
             only_active_shows = (not to_bool(self.settings.show_inactive_shows))
-            shows = self.video_client.get_tv_shows(self.bu, letter, only_active_shows)["showList"]
+            shows = self.video_client.get_tv_shows(self.bu, letter, only_active_shows=only_active_shows)["showList"]
             self.tv_shows_menu(shows)
         xbmcplugin.endOfDirectory(self.HANDLE)
 
-    def search_tv_shows(self, search_string: str):
-        pass
+    def search_tv_shows(self):
+        search_string = xbmcgui.Dialog().input("Search TV Shows")
+        self.logger.info(f"Search string: {search_string}")
+        res = self.video_client.get_tv_shows(self.bu, string_filter=search_string)
+        self.tv_shows_menu(res.get("searchResultListShow"))
+        xbmcplugin.endOfDirectory(self.HANDLE)
 
     def tv_shows_menu(self, shows: list):
         self.logger.debug("Builds TV Shows Menu")
@@ -198,28 +202,58 @@ class Plugin:
                 "tv_show_id": quote_plus(show.get("id")),
             }
 
-            self._add_tv_show_to_directory(
-                show.get("title", ""), description, image_url, self.router.url(mode="list_videos", **url_args)
+            name = show.get("title", "")
+            self._add_item_to_directory(
+                name,
+                self.router.url(mode="list_episodes_by_show", **url_args),
+                description,
+                video_info={"title": name, "plot": description, "plotoutline": description},
+                thumbnailImage=image_url,
+                fanart=image_url,
+                is_folder=True
             )
 
-    def videos_by_topic(self, topic_id: str = ""):
-        if not topic_id:
-            topics = self.video_client.get_topics(self.bu)["topicList"]
+    def videos_by_topic(self):
+        topics = self.video_client.get_topics(self.bu)["topicList"]
 
-            for topic in topics:
-                image_url = topic.get("imageUrl", "")
-                name = topic.get("title", "")
-                topic_id = topic.get("id", "")
-                self._add_menu_to_directory(name, self.router.url(mode="videos_by_topic", **{"topic_id": topic_id}), image_url)
-        else:
-            videos = self.video_client.get_latest_episodes(
-                self.bu,
-                topic_id=topic_id
-            )
-            # TODO
+        for topic in topics:
+            image_url = topic.get("imageUrl", "")
+            name = topic.get("title", "")
+            topic_id = topic.get("id", "")
+            self._add_item_to_directory(name, self.router.url(mode="list_videos_by_topic", **{"topic_id": topic_id}), thumbnailImage=image_url, is_folder=True)
         xbmcplugin.endOfDirectory(self.HANDLE)
 
-    def list_episodes(self, tv_show_id: str, current_page: int, number_of_episodes: int, next_page_id=""):
+    def list_videos_by_topic(self, topic_id: str, current_page: int, number_of_episodes: int, next_page_id=""):
+        number_of_episodes_per_page = int(self.settings.number_of_episodes_per_page)
+        res = self.video_client.get_latest_episodes(self.bu, topic_id=topic_id, page_size=number_of_episodes_per_page, next_page_id=next_page_id)
+
+        media_list = res.get("mediaList")
+        for media in media_list:
+            episode = media.get("episode")
+            show = media.get("show")
+            self._add_video_to_directory(show, episode, media)
+
+        next_page_url = res.get("next")
+        if next_page_url:
+            next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
+            number_of_pages = self._compute_number_of_pages(number_of_episodes_per_page, number_of_episodes)
+            next_page = current_page + 1
+            liz_name = self.tr(30020).format(current_page, number_of_pages or "?")
+
+            self._add_item_to_directory(
+                liz_name,
+                self.router.url(
+                    mode="list_videos_by_topic",
+                    **{"next_page_id": next_page_id, "current_page": current_page + 1, "topic_id": topic_id},
+                ),
+                label2=str(next_page),
+                video_info={"title": liz_name, "plot": str(next_page), "plotoutline": str(next_page)},
+                is_folder=True,
+            )
+        
+        xbmcplugin.endOfDirectory(self.HANDLE)
+
+    def list_episodes_by_show(self, tv_show_id: str, current_page: int, number_of_episodes: int, next_page_id=""):
         """Lists the latest episodes of a TV Show
         :param tv_show_id: The id of the TV Show
         :param current_page: Index of the current episodes page
@@ -237,40 +271,39 @@ class Plugin:
         if show and episodes:
             for episode in episodes:
                 media = episode.get("mediaList")[0]
-
-                url_args = {
-                    "video_id": episode.get("id"),
-                    "media_id": media.get("id"),
-                }
-                
-                self._add_video_to_directory(
-                    name=episode.get("title", "") + " - " + media.get("title", ""),
-                    desc=media.get("description", ""),
-                    length=int(media.get("duration", 0) / 1000 / 60),
-                    pubdate=episode.get("publishedDate", ""),
-                    tv_show_image_url=show.get("imageUrl", ""),
-                    image_url=episode.get("imageUrl", ""),
-                    url=self.router.url(mode="play_video", **url_args),
-                )
+                self._add_video_to_directory(show, episode, media)
 
             next_page_url = res.get("next")
             if next_page_url:
                 next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
-                number_of_pages = int(
-                    (number_of_episodes_per_page - 1 + number_of_episodes)
-                    / number_of_episodes_per_page
+                number_of_pages = self._compute_number_of_pages(number_of_episodes_per_page, number_of_episodes)
+                next_page = current_page + 1
+                liz_name = self.tr(30020).format(current_page, number_of_pages or "?")
+
+                self._add_item_to_directory(
+                    liz_name,
+                    self.router.url(
+                        mode="list_episodes_by_show", **{"next_page_id": next_page_id, "current_page": next_page, "tv_show_id": quote_plus(show.get("id"))}
+                    ),
+                    label2=str(next_page),
+                    video_info={"title": liz_name, "plot": str(next_page), "plotoutline": str(next_page)},
+                    is_folder=True,
                 )
-                self._add_next_page_to_directory(
-                    name=self.tr(30020).format(current_page, number_of_pages or "?"),
-                    desc=str(current_page + 1),
-                    url=self.router.url(
-                        mode="list_video",
-                        **{"next_page_id": next_page_id, "tv_show_id": quote_plus(show.get("id"))},
-                    )
-                )
-        
         xbmcplugin.endOfDirectory(self.HANDLE)
-    
+
+    def _compute_number_of_pages(self, number_of_episodes_per_page: int, number_of_episodes: int) -> int:
+        return int(
+            (number_of_episodes_per_page - 1 + number_of_episodes) / number_of_episodes_per_page
+        )
+
+    def search_videos(self):
+        search_string = xbmcgui.Dialog().input("Search Videos")
+        self.logger.info(f"Search string: {search_string}")
+
+        res = self.video_client.search_video(self.bu, search_string)
+        self.tv_shows_menu(res.get("searchResultListShow"))
+        xbmcplugin.endOfDirectory(self.HANDLE)
+
     def play_video(self, video_id: str, media_id: str):
         """Plays the selected video
         :param video_id: The video ID
@@ -343,55 +376,62 @@ class Plugin:
 
     # ================================= Helper methods ==================================
 
-    def _add_menu_to_directory(self, name: str, url: str, icon: str = ""):
-        """Helper method that adds a "Menu" Item to the xbmcplugin Directory
-        :param name: The name of the item
-        :param url: The item's url
-        """
-        liz = xbmcgui.ListItem(name)
-        liz.setArt({"thumb": icon})
-        xbmcplugin.addDirectoryItem(
-            self.HANDLE,
-            url,
-            listitem=liz,
-            isFolder=True,
-        )
-
-    def _add_tv_show_to_directory(self, name, desc="", image_url="", url=""):
-        """Helper method that adds a tv_show Item to the xbmcplugin Directory"""
+    def _add_video_to_directory(self, show: dict, episode: dict, media: dict):
+        url_args = {
+            "video_id": episode.get("id"),
+            "media_id": media.get("id"),
+        }
         
-        liz = xbmcgui.ListItem(name, desc)
-        liz.setArt(
-            {
-                "poster": image_url,
-                "banner": image_url,
-                "fanart": image_url,
-                "thumb": image_url,
-            }
-        )
-        liz.setInfo(type="video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
-        xbmcplugin.addDirectoryItem(
-            self.HANDLE,
-            url,
-            listitem=liz,
-            isFolder=True,
+        vid_name = episode.get("title", "") + " - " + media.get("title", "")
+        vid_desc = media.get("description", "")
+        duration = int(media.get("duration", 0) / 1000 / 60)
+
+        self._add_item_to_directory(
+            vid_name,
+            self.router.url(mode="play_video", **url_args),
+            label2=vid_desc,
+            thumbnailImage=episode.get("imageUrl", ""),
+            fanart=show.get("imageUrl", ""),
+            video_info={"Title": vid_name, "Duration": duration, "Plot": vid_desc, "Aired": episode.get("publishedDate", "")},
+            properties={"IsPlayable": "true"},
         )
 
-    def _add_video_to_directory(self, name, desc="", length="", pubdate="", tv_show_image_url="", image_url="", url=""):
-        """Helper method that adds a Video Item to the xbmcplugin Directory"""
-        liz = xbmcgui.ListItem(name, desc)
-        liz.setArt({"poster": image_url, "banner": image_url, "fanart": tv_show_image_url, "thumb": image_url})
-        liz.setInfo(type="Video", infoLabels={"Title": name, "Duration": length, "Plot": desc, "Aired": pubdate})
-        liz.setProperty("IsPlayable", "true")
-        xbmcplugin.addDirectoryItem(self.HANDLE, url, listitem=liz)
-    
-    def _add_next_page_to_directory(self, name, desc, url):
-        """Helper method that adds a "next page" Item to the xbmcplugin Directory"""
-        liz = xbmcgui.ListItem(name, desc)
-        liz.setInfo(type="Video", infoLabels={"title": name, "plot": desc, "plotoutline": desc})
+    def _add_item_to_directory(
+        self,
+        name: str,
+        url: str,
+        label2: str = "",
+        iconImage: str = "",
+        thumbnailImage: str = "",
+        poster: dict = None,
+        fanart: dict = None,
+        video_info: dict = None,
+        properties: dict = None,
+        subtitles: dict = None,
+        is_folder: bool = False,
+    ):
+        """Helper method that creates a ListItem and adds it to the xbmcplugin Directory"""
+        liz = xbmcgui.ListItem(name, label2)
+        if properties:
+            liz.setProperties(properties)
+        if video_info:
+            liz.setInfo("video", video_info)
+        if poster:
+            liz.setArt({"poster": poster})
+        if fanart:
+            liz.setArt({"fanart": fanart})
+        if thumbnailImage:
+            liz.setArt({"thumb": thumbnailImage})
+        if iconImage:
+            liz.setArt({"icon": iconImage})
+        if subtitles:
+            liz.setSubtitles(subtitles)
+
+        self.logger.info(f"URL = {url}")
+
         xbmcplugin.addDirectoryItem(
             self.HANDLE,
             url,
             listitem=liz,
-            isFolder=True,
+            isFolder=is_folder,
         )

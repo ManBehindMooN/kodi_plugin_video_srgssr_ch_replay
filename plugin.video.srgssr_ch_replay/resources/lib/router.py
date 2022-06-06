@@ -41,16 +41,25 @@ class Router:
                 letter = kwargs.get("letter", "")
                 self.plugin.tv_shows_by_letter(letter)
             elif mode == "videos_by_topic":
-                topic = kwargs.get("topic", "")
-                self.plugin.videos_by_topic(topic)
-            elif mode == "search_shows":
+                self.plugin.videos_by_topic()
+            elif mode == "list_videos_by_topic":
+                self.plugin.list_videos_by_topic(
+                    kwargs["topic_id"],
+                    int(kwargs.get("current_page", 0)),
+                    int(kwargs.get("number_of_episodes", 0)),
+                    kwargs.get("next_page_id", ""),
+                )
+            elif mode == "search_tv_shows":
                 self.plugin.search_tv_shows()
-            elif mode == "list_videos":
-                tv_show_id = kwargs.get("tv_show_id", "")
-                current_page = int(kwargs.get("current_page", 0))
-                number_of_episodes = int(kwargs.get("number_of_episodes", 0))
-                next_page_id = kwargs.get("next_page_id", "")
-                self.plugin.list_episodes(tv_show_id, current_page, number_of_episodes, next_page_id)
+            elif mode == "search_videos":
+                self.plugin.search_videos()
+            elif mode == "list_episodes_by_show":
+                self.plugin.list_episodes_by_show(
+                    kwargs["tv_show_id"],
+                    int(kwargs.get("current_page", 0)),
+                    int(kwargs.get("number_of_episodes", 0)),
+                    kwargs.get("next_page_id", ""),
+                )
             elif mode == "play_video":
                 video_id = kwargs.get("video_id", "")
                 media_id = kwargs.get("media_id", "")
