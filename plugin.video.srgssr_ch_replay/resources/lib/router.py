@@ -14,7 +14,7 @@ class Router:
         """Constructs the plugin's URL"""
         if not bu:
             bu = self.plugin.bu
-        path = os.path.join(bu, mode).strip("/")
+        path = f"{bu}/{mode}"
         return f"{self.plugin.ADDON_URL}/{path}?{urlencode(kwargs)}"
 
     def dispatch(self, path: str, **kwargs):

@@ -93,7 +93,7 @@ class SRGSSRApiClient:
 
         params = {"grant_type": "client_credentials"}
         res = requests.post(
-            os.path.join(self._base_url, "oauth/v1/accesstoken"),
+            f"{self._base_url}/oauth/v1/accesstoken",
             params=params,
             auth=self._basic_auth,
         )
@@ -142,7 +142,7 @@ class SRGSSRApiClient:
 
     def _url(self, path: str) -> str:
         """Constructs the API url"""
-        return os.path.join(self._base_url, self.api_url_name, self.version, path)
+        return f"{self._base_url}/{self.api_url_name}/{self.version}/{path}"
 
     @property
     def _headers(self) -> dict:
