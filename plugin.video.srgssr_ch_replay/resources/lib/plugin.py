@@ -1,6 +1,7 @@
 from string import ascii_lowercase
 import sys
 import os
+import requests
 from collections import namedtuple
 from typing import Tuple
 from urllib.parse import parse_qsl, quote_plus, urlparse, urlsplit
@@ -235,22 +236,13 @@ class Plugin:
 
         next_page_url = res.get("next")
         if next_page_url:
-            next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
-            number_of_pages = self._compute_number_of_pages(number_of_episodes_per_page, number_of_episodes)
-            next_page = current_page + 1
-            liz_name = self.tr(30020).format(current_page, number_of_pages or "?")
-
-            self._add_item_to_directory(
-                liz_name,
-                self.router.url(
-                    mode="list_videos_by_topic",
-                    **{"next_page_id": next_page_id, "current_page": current_page + 1, "topic_id": topic_id},
-                ),
-                label2=str(next_page),
-                video_info={"title": liz_name, "plot": str(next_page), "plotoutline": str(next_page)},
-                is_folder=True,
+            self._add_next_page_to_directory(
+                current_page,
+                next_page_url,
+                number_of_episodes,
+                "list_videos_by_topic",
+                {"topic_id": topic_id},
             )
-        
         xbmcplugin.endOfDirectory(self.HANDLE)
 
     def list_episodes_by_show(self, tv_show_id: str, current_page: int, number_of_episodes: int, next_page_id=""):
@@ -275,26 +267,14 @@ class Plugin:
 
             next_page_url = res.get("next")
             if next_page_url:
-                next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
-                number_of_pages = self._compute_number_of_pages(number_of_episodes_per_page, number_of_episodes)
-                next_page = current_page + 1
-                liz_name = self.tr(30020).format(current_page, number_of_pages or "?")
-
-                self._add_item_to_directory(
-                    liz_name,
-                    self.router.url(
-                        mode="list_episodes_by_show", **{"next_page_id": next_page_id, "current_page": next_page, "tv_show_id": quote_plus(show.get("id"))}
-                    ),
-                    label2=str(next_page),
-                    video_info={"title": liz_name, "plot": str(next_page), "plotoutline": str(next_page)},
-                    is_folder=True,
-                )
+                self._add_next_page_to_directory(
+                current_page,
+                next_page_url,
+                number_of_episodes,
+                "list_episodes_by_show",
+                {"tv_show_id": quote_plus(show.get("id"))},
+            )
         xbmcplugin.endOfDirectory(self.HANDLE)
-
-    def _compute_number_of_pages(self, number_of_episodes_per_page: int, number_of_episodes: int) -> int:
-        return int(
-            (number_of_episodes_per_page - 1 + number_of_episodes) / number_of_episodes_per_page
-        )
 
     def search_videos(self):
         search_string = xbmcgui.Dialog().input("Search Videos")
@@ -394,6 +374,37 @@ class Plugin:
             fanart=show.get("imageUrl", ""),
             video_info={"Title": vid_name, "Duration": duration, "Plot": vid_desc, "Aired": episode.get("publishedDate", "")},
             properties={"IsPlayable": "true"},
+        )
+    
+    def _add_next_page_to_directory(
+        self,
+        current_page: int,
+        next_page_url: str,
+        number_of_episodes: int,
+        url_mode: str,
+        url_args: dict,
+    ):
+        """Helper method to add a "next page" item to the directory"""
+        number_of_episodes_per_page = int(self.settings.number_of_episodes_per_page)
+        number_of_pages = self._compute_number_of_pages(number_of_episodes_per_page, number_of_episodes)
+        liz_name = self.tr(30020).format(current_page, number_of_pages or "?")
+        next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
+        next_page = current_page + 1
+
+        url_args.update({"next_page_id": next_page_id, "current_page": next_page})
+        
+        self._add_item_to_directory(
+            liz_name,
+            self.router.url(mode=url_mode, **url_args),
+            label2=str(next_page),
+            video_info={"title": liz_name, "plot": str(next_page), "plotoutline": str(next_page)},
+            is_folder=True,
+        )
+
+    def _compute_number_of_pages(self, number_of_episodes_per_page: int, number_of_episodes: int) -> int:
+        """Helper method returning on how many pages the episodes are displayed"""
+        return int(
+            (number_of_episodes_per_page - 1 + number_of_episodes) / number_of_episodes_per_page
         )
 
     def _add_item_to_directory(
