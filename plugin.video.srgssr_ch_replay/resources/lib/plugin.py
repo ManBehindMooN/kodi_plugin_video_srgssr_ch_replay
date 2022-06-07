@@ -364,7 +364,7 @@ class Plugin:
         
         vid_name = episode.get("title", "") + " - " + media.get("title", "")
         vid_desc = media.get("description", "")
-        duration = int(media.get("duration", 0) / 1000 / 60)
+        duration = int(media.get("duration", 0) // 1000)
 
         self._add_item_to_directory(
             vid_name,
