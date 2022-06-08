@@ -70,6 +70,32 @@ class SRGSSRVideoApiClient(SRGSSRApiClient):
         return self._handle_response(resp)
 
     @SRGSSRApiClient._renew_access_token
+    def get_trendings(self, bu: str, page_size: int = -1, next_page_id: str = "") -> dict:
+        """Returns videos from the editorial picks and complete list with trending videos"""
+        params = {"bu": bu}
+        if page_size > 0 and not next_page_id:
+            params.update({"pageSize": page_size})
+        if next_page_id:
+            params.update({"next": next_page_id})
+        
+        resp = self._get("trending_picks", params=params)
+        return self._handle_response(resp)
+    
+    @SRGSSRApiClient._renew_access_token
+    def get_most_clicked(self, bu: str, topic_id: str = "", page_size: int = -1, next_page_id: str = "") -> dict:
+        """Returns videos from the editorial picks and complete list with trending videos"""
+        params = {"bu": bu}
+        if page_size > 0 and not next_page_id:
+            params.update({"pageSize": page_size})
+        if next_page_id:
+            params.update({"next": next_page_id})
+        if topic_id:
+            params.update({"topicId": topic_id})
+        
+        resp = self._get("most_clicked", params=params)
+        return self._handle_response(resp)
+
+    @SRGSSRApiClient._renew_access_token
     def search_video(self, bu: str, search_string: str = "", page_size: int = -1, next_page_id: str = "") -> dict:
         """Search videos matching the search string"""
         params = {
