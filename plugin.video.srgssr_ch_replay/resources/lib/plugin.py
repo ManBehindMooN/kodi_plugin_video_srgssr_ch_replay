@@ -40,6 +40,7 @@ class Plugin:
     def __init__(self):
         self.tr = self.ADDON.getLocalizedString
         self.icon = self.ADDON.getAddonInfo("icon")
+        self.path = self.ADDON.getAddonInfo("path")
         self.logger = Logger(self)
         self.router = Router(self)
         xbmcplugin.setContent(self.HANDLE, "tv_shows")
@@ -53,7 +54,7 @@ class Plugin:
         except InvalidCredentialsException as exc:
             xbmcgui.Dialog().ok(self.tr(30096).format(exc.api_name), self.tr(30097))
             sys.exit(1)
-
+        
     def _create_work_folder(self):
         """Creating the addon work folder"""
         try:
@@ -104,11 +105,11 @@ class Plugin:
     def _bu_menu_items(self):
         """BU menu items"""
         return [
-            MainMenuItem(self.tr(30014), self.router.url("srf"), self.icon),  # TODO custom icons
-            MainMenuItem(self.tr(30015), self.router.url("swi"), self.icon),
-            MainMenuItem(self.tr(30016), self.router.url("rts"), self.icon),
-            MainMenuItem(self.tr(30017), self.router.url("rsi"), self.icon),
-            MainMenuItem(self.tr(30018), self.router.url("rtr"), self.icon),
+            MainMenuItem(self.tr(30014), self.router.url("srf"), self.router.icon_path("srf")),
+            MainMenuItem(self.tr(30015), self.router.url("swi"), self.router.icon_path("swi")),
+            MainMenuItem(self.tr(30016), self.router.url("rts"), self.router.icon_path("rts")),
+            MainMenuItem(self.tr(30017), self.router.url("rsi"), self.router.icon_path("rsi")),
+            MainMenuItem(self.tr(30018), self.router.url("rtr"), self.router.icon_path("rtr")),
         ]
 
     def _main_menu_items(self):
@@ -117,27 +118,27 @@ class Plugin:
             MainMenuItem(
                 "All TV Shows",
                 self.router.url(mode="all_shows"),
-                self.icon,  # TODO custom icons
+                self.router.icon_path(self.bu),
             ),
             MainMenuItem(
                 "TV Shows by Letters",
                 self.router.url(mode="shows_by_letters"),
-                self.icon,
-            ),
-            MainMenuItem(
-                "Search TV Shows",
-                self.router.url(mode="search_tv_shows"),
-                self.icon,
+                self.router.icon_path(self.bu),
             ),
             MainMenuItem(
                 "Videos by Topics",
                 self.router.url(mode="videos_by_topic"),
-                self.icon,
+                self.router.icon_path(self.bu),
             ),
             MainMenuItem(
-                "Search Videos",
-                self.router.url(mode="search_videos"),
-                self.icon,
+                "Trending",
+                self.router.url(mode="trending"),
+                self.router.icon_path(self.bu),
+            ),
+            MainMenuItem(
+                "Search",
+                self.router.url(mode="search"),
+                self.router.icon_path(self.bu),
             ),
         ]
 
@@ -180,13 +181,6 @@ class Plugin:
             only_active_shows = (not to_bool(self.settings.show_inactive_shows))
             shows = self.video_client.get_tv_shows(self.bu, letter, only_active_shows=only_active_shows)["showList"]
             self.tv_shows_menu(shows)
-        xbmcplugin.endOfDirectory(self.HANDLE)
-
-    def search_tv_shows(self):
-        search_string = xbmcgui.Dialog().input("Search TV Shows")
-        self.logger.info(f"Search string: {search_string}")
-        res = self.video_client.get_tv_shows(self.bu, string_filter=search_string)
-        self.tv_shows_menu(res.get("searchResultListShow"))
         xbmcplugin.endOfDirectory(self.HANDLE)
 
     def tv_shows_menu(self, shows: list):
@@ -276,12 +270,43 @@ class Plugin:
             )
         xbmcplugin.endOfDirectory(self.HANDLE)
 
-    def search_videos(self):
-        search_string = xbmcgui.Dialog().input("Search Videos")
-        self.logger.info(f"Search string: {search_string}")
+    def trending(self, current_page: int, next_page_id=""):
+        number_of_episodes_per_page = int(self.settings.number_of_episodes_per_page)
+        res = self.video_client.get_trendings(self.bu, number_of_episodes_per_page, next_page_id)
 
-        res = self.video_client.search_video(self.bu, search_string)
-        self.tv_shows_menu(res.get("searchResultListShow"))
+        for media in res.get("mediaList"):
+            show = media.get("show")
+            episode = media.get("episode")
+            self._add_video_to_directory(show, episode, media)
+
+        next_page_url = res.get("next")
+        if next_page_url:
+            self._add_next_page_to_directory(
+                current_page,
+                next_page_url,
+                0,
+                "trending",
+            )
+        xbmcplugin.endOfDirectory(self.HANDLE)
+
+    def search_menu(self, type: str = ""):
+        if not type:
+            self._add_item_to_directory("Search TV Shows", self.router.url(mode="search", **{"type": "tv_shows"}), is_folder=True)
+            self._add_item_to_directory("Search Videos", self.router.url(mode="search", **{"type": "videos"}), is_folder=True)
+        else:
+            if type == "tv_shows":
+                search_string = xbmcgui.Dialog().input("Search TV Shows")
+                res = self.video_client.get_tv_shows(self.bu, string_filter=search_string)
+                self.tv_shows_menu(res.get("searchResultListShow"))
+            elif type == "videos":
+                search_string = xbmcgui.Dialog().input("Search Videos")
+                res = self.video_client.search_video(self.bu, search_string, page_size=20)
+                for media in res.get("searchResultListMedia"):
+                    show = media.get("show")
+                    episode = media.get("episode")
+                    self._add_video_to_directory(show, episode, media)
+                # TODO: Add next page
+        
         xbmcplugin.endOfDirectory(self.HANDLE)
 
     def play_video(self, video_id: str, media_id: str):
@@ -382,9 +407,10 @@ class Plugin:
         next_page_url: str,
         number_of_episodes: int,
         url_mode: str,
-        url_args: dict,
+        url_args: dict = None,
     ):
         """Helper method to add a "next page" item to the directory"""
+        url_args = {} if url_args is None else url_args
         number_of_episodes_per_page = int(self.settings.number_of_episodes_per_page)
         number_of_pages = self._compute_number_of_pages(number_of_episodes_per_page, number_of_episodes)
         liz_name = self.tr(30020).format(current_page, number_of_pages or "?")

@@ -17,6 +17,9 @@ class Router:
         path = f"{bu}/{mode}"
         return f"{self.plugin.ADDON_URL}/{path}?{urlencode(kwargs)}"
 
+    def icon_path(self, name):
+        return f"{self.plugin.path}/resources/media/{name}.png"
+
     def dispatch(self, path: str, **kwargs):
         """Dispatch to the plugin menu
         :param path: url path
@@ -49,10 +52,14 @@ class Router:
                     int(kwargs.get("number_of_episodes", 0)),
                     kwargs.get("next_page_id", ""),
                 )
+            elif mode == "search":
+                self.plugin.search_menu(kwargs.get("type", ""))
             elif mode == "search_tv_shows":
                 self.plugin.search_tv_shows()
             elif mode == "search_videos":
                 self.plugin.search_videos()
+            elif mode == "trending":
+                self.plugin.trending(int(kwargs.get("current_page", 0)), kwargs.get("next_page_id", ""))
             elif mode == "list_episodes_by_show":
                 self.plugin.list_episodes_by_show(
                     kwargs["tv_show_id"],
