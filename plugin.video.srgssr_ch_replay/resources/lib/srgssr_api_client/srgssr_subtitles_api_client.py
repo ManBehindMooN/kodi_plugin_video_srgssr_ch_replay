@@ -16,4 +16,4 @@ class SRGSSRSubtitlesApiClient(SRGSSRApiClient):
         :param video_urn: URN of the video
         """
         resp = self._get(f"identifier/{video_urn}")
-        return self._returning_func(resp)
+        return self._handle_response(resp)

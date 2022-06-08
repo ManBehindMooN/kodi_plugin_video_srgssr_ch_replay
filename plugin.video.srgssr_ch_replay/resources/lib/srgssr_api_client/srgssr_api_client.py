@@ -93,7 +93,7 @@ class SRGSSRApiClient:
 
         params = {"grant_type": "client_credentials"}
         res = requests.post(
-            os.path.join(self._base_url, "oauth/v1/accesstoken"),
+            f"{self._base_url}/oauth/v1/accesstoken",
             params=params,
             auth=self._basic_auth,
         )
@@ -129,7 +129,7 @@ class SRGSSRApiClient:
 
         return wrapper
 
-    def _returning_func(self, res: Response) -> dict:
+    def _handle_response(self, res: Response) -> dict:
         """Errors handling + returning json response"""
         if res.status_code in [401, 403]:
             self._logger.error(f"Error{res.status_code}: Invalid token. {res.content}")
@@ -142,7 +142,7 @@ class SRGSSRApiClient:
 
     def _url(self, path: str) -> str:
         """Constructs the API url"""
-        return os.path.join(self._base_url, self.api_url_name, self.version, path)
+        return f"{self._base_url}/{self.api_url_name}/{self.version}/{path}"
 
     @property
     def _headers(self) -> dict:

@@ -62,14 +62,30 @@
 		</category>
 		<category help="" id="general" label="30200">
 			<group id="1">
-				<setting help="" id="number_of_episodes_per_page" label="30201" type="integer">
+				<setting id="default_bu" type="string" label="30201" help="">
+					<level>0</level>
+					<default>choose</default>
+					<constraints>
+						<options>
+							<option label="30202">choose</option>
+							<option label="30014">srf</option>
+							<option label="30015">swi</option>
+							<option label="30016">rts</option>
+							<option label="30017">rsi</option>
+							<option label="30018">rtr</option>
+						</options>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+				<setting help="" id="number_of_episodes_per_page" label="30203" type="integer">
 					<level>0</level>
 					<default>10</default>
 					<control format="integer" type="edit">
-						<heading>30201</heading>
+						<heading>30203</heading>
 					</control>
 				</setting>
-				<setting help="" id="enable_inputstream_adaptive" label="30202" type="boolean">
+				<setting help="" id="enable_inputstream_adaptive" label="30204" type="boolean">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
