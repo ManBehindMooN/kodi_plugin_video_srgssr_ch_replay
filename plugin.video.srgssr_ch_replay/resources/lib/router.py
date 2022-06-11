@@ -54,10 +54,6 @@ class Router:
                 )
             elif mode == "search":
                 self.plugin.search_menu(kwargs.get("type", ""))
-            elif mode == "search_tv_shows":
-                self.plugin.search_tv_shows()
-            elif mode == "search_videos":
-                self.plugin.search_videos()
             elif mode == "trending":
                 self.plugin.trending(int(kwargs.get("current_page", 0)), kwargs.get("next_page_id", ""))
             elif mode == "list_episodes_by_show":
