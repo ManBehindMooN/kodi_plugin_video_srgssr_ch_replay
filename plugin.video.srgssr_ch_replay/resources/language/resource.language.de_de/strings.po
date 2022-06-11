@@ -9,8 +9,8 @@ msgid "SRF"
 msgstr "SRF"
 
 msgctxt "#30015"
-msgid "SRF Info"
-msgstr "SRF Info"
+msgid "SwissInfo"
+msgstr "SwissInfo"
 
 msgctxt "#30016"
 msgid "RTS"
