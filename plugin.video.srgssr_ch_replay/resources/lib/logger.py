@@ -2,6 +2,7 @@ import xbmc
 
 
 class Logger:
+    """Wrapper of the XBMC Logger"""
     def __init__(self, plugin):
         self.plugin = plugin
 

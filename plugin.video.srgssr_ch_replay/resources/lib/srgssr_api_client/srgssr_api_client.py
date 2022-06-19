@@ -1,6 +1,5 @@
 """SRGSSR Base API Client"""
 
-import os
 from datetime import datetime, timedelta
 import requests
 from requests.auth import HTTPBasicAuth
@@ -76,7 +75,8 @@ class SRGSSRApiClient:
         """Returning the authorization token
 
         Trying to get the auth token from the plugin settings. If it doesn't
-        exists, request a new one"""
+        exists, request a new one
+        """
         token_exp = getattr(self._plugin.settings, f"srgssr_{self.api_name}_token_exp")
         if token_exp:
             token_exp = datetime.fromisoformat(token_exp)
@@ -89,6 +89,7 @@ class SRGSSRApiClient:
         return self.request_new_token()
 
     def request_new_token(self) -> str:
+        """Requests a new AccessToken to the API using the credentials"""
         self._logger.debug("Requesting new AuthToken")
 
         params = {"grant_type": "client_credentials"}

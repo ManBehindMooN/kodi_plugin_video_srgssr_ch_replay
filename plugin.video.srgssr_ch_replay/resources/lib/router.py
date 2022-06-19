@@ -1,16 +1,16 @@
 """Routing in the plugin menus"""
 
-import os.path
 from urllib.parse import urlencode
 
 import xbmcplugin
 
-class Router:
 
+class Router:
+    """Router dispatching the queries on the Addon"""
     def __init__(self, plugin):
         self.plugin = plugin
 
-    def url(self, bu: str ="", mode: str ="", **kwargs):
+    def url(self, bu: str = "", mode: str = "", **kwargs):
         """Constructs the plugin's URL"""
         if not bu:
             bu = self.plugin.bu
@@ -55,7 +55,9 @@ class Router:
             elif mode == "search":
                 self.plugin.search_menu(kwargs.get("type", ""))
             elif mode == "trending":
-                self.plugin.trending(int(kwargs.get("current_page", 0)), kwargs.get("next_page_id", ""))
+                self.plugin.trending(
+                    int(kwargs.get("current_page", 0)), kwargs.get("next_page_id", "")
+                )
             elif mode == "list_episodes_by_show":
                 self.plugin.list_episodes_by_show(
                     kwargs["tv_show_id"],
@@ -71,7 +73,7 @@ class Router:
     def _bu(self, path: str):
         """Gets the channel from the path"""
         return path.split("/")[1]
-    
+
     def _mode(self, path: str):
         """Gets the mode (choosed submenu) from the path"""
         parts = path.split("/")

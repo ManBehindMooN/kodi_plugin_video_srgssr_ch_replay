@@ -2,6 +2,7 @@ import xbmcaddon
 
 
 class Settings:
+    """Wrapper of the XBMC settings"""
     def __getattr__(self, name):
         return xbmcaddon.Addon().getSetting(name)
 
