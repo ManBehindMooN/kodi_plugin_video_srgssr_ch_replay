@@ -71,24 +71,24 @@ class Plugin:
 
     def _create_api_clients(self) -> Tuple[SRGSSRVideoApiClient, SRGSSRSubtitlesApiClient]:
         """Creates and returns the Video and Subtitles API clients"""
-        self._check_api_credentials_set("consumer_key", "consumer_secret")
+        self._check_api_credentials_set("consumerKey", "consumerSecret")
         video_client = SRGSSRVideoApiClient(
             self.SRG_API_BASE_URL,
             {
-                "key": self.settings.consumer_key,
-                "secret": self.settings.consumer_secret,
+                "key": self.settings.consumerKey,
+                "secret": self.settings.consumerSecret,
             },
             self,
         )
 
         subs_client = None
         if to_bool(self.settings.enable_subtitles):
-            self._check_api_credentials_set("consumer_key_subtitles", "consumer_secret_subtitles")
+            self._check_api_credentials_set("consumerKeySubtitles", "consumerSecretSubtitles")
             subs_client = SRGSSRSubtitlesApiClient(
                 self.SRG_API_BASE_URL,
                 {
-                    "key": self.settings.consumer_key_subtitles,
-                    "secret": self.settings.consumer_secret_subtitles,
+                    "key": self.settings.consumerKeySubtitles,
+                    "secret": self.settings.consumerSecretSubtitles,
                 },
                 self,
             )

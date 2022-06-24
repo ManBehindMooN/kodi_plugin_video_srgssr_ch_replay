@@ -3,7 +3,7 @@
 	<section id="plugin.video.srgssr_ch_replay">
 		<category help="" id="srg ssr api" label="30100">
 			<group id="1">
-				<setting help="" id="consumer_key" label="30101" type="string">
+				<setting help="" id="consumerKey" label="30101" type="string">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -13,7 +13,7 @@
 						<heading>30101</heading>
 					</control>
 				</setting>
-				<setting help="" id="consumer_secret" label="30102" type="string">
+				<setting help="" id="consumerSecret" label="30102" type="string">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -28,7 +28,7 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting help="" id="consumer_key_subtitles" label="30104" parent="enable_subtitles" type="string">
+				<setting help="" id="consumerKeySubtitles" label="30104" parent="enable_subtitles" type="string">
 					<level>0</level>
 					<default/>
 					<constraints>
@@ -43,7 +43,7 @@
 						<heading>30104</heading>
 					</control>
 				</setting>
-				<setting help="" id="consumer_secret_subtitles" label="30105" parent="enable_subtitles" type="string">
+				<setting help="" id="consumerSecretSubtitles" label="30105" parent="enable_subtitles" type="string">
 					<level>0</level>
 					<default/>
 					<constraints>
