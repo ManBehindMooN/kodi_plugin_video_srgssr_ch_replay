@@ -450,7 +450,7 @@ class Plugin:
             vid_name,
             self.router.url(mode="play_video", **url_args),
             label2=vid_desc,
-            thumbnail_image=episode.get("imageUrl", ""),
+            thumbnail_image=media.get("imageUrl", ""),
             fanart=show.get("imageUrl", ""),
             video_info={
                 "Title": vid_name,
