@@ -33,11 +33,31 @@ msgid "Older episodes (page {0} of {1})"
 msgstr ""
 
 msgctxt "#30021"
-msgid "Search TV shows"
+msgid "All TV Shows"
 msgstr ""
 
 msgctxt "#30022"
-msgid "Enter a TV show name to search for"
+msgid "TV Shows by Letters"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Topics"
+msgstr ""
+
+msgctxt "#30024"
+msgid "Trending"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Search"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Search TV Shows"
+msgstr ""
+
+msgctxt "#30032"
+msgid "Search Videos"
 msgstr ""
 
 msgctxt "#30096"
@@ -90,7 +110,7 @@ msgid "Default Business Unit"
 msgstr ""
 
 msgctxt "#30202"
-msgid "Choose in the Addon"
+msgid "Choose in the Add-on"
 msgstr ""
 
 msgctxt "#30203"
@@ -107,8 +127,4 @@ msgstr ""
 
 msgctxt "#30901"
 msgid "Show inactive TV shows"
-msgstr ""
-
-msgctxt "#30902"
-msgid "Disable letter menu"
 msgstr ""

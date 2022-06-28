@@ -33,19 +33,39 @@ msgid "Older episodes (page {0} of {1})"
 msgstr "Ältere Ausstrahlungen (Seite {0} von {1})"
 
 msgctxt "#30021"
-msgid "Search TV shows"
-msgstr "Suche nach Sendungen"
+msgid "All TV Shows"
+msgstr "TODO"
 
 msgctxt "#30022"
-msgid "Enter a TV show name to search for"
-msgstr "Einen Sendungsname eingeben für die Suche"
+msgid "TV Shows by Letters"
+msgstr "TODO"
+
+msgctxt "#30023"
+msgid "Topics"
+msgstr "TODO"
+
+msgctxt "#30024"
+msgid "Trending"
+msgstr "TODO"
+
+msgctxt "#30025"
+msgid "Search"
+msgstr "TODO"
+
+msgctxt "#30031"
+msgid "Search TV Shows"
+msgstr "TODO"
+
+msgctxt "#30032"
+msgid "Search Videos"
+msgstr "TODO"
 
 msgctxt "#30096"
 msgid "Incorrect '{0} API' credentials"
 msgstr "Falsche '{0} API' Zugangsdaten"
 
 msgctxt "#30097"
-msgid "Please check they are correctly entered in the addon settings"
+msgid "Please check they are correctly entered in the add-on settings"
 msgstr "Bitte sicherstellen, dass die Zugangsdaten korrekt in den Add-on Einstellungen eingegeben wurden"
 
 msgctxt "#30098"
@@ -89,7 +109,7 @@ msgid "Default Business Unit"
 msgstr "TODO"
 
 msgctxt "#30202"
-msgid "Choose in the Addon"
+msgid "Choose in the Add-on"
 msgstr "TODO"
 
 msgctxt "#30203"
@@ -107,7 +127,3 @@ msgstr "Experimentell"
 msgctxt "#30901"
 msgid "Show inactive TV shows"
 msgstr "Inaktive Sendungen anzeigen"
-
-msgctxt "#30902"
-msgid "Disable letter menu"
-msgstr "Buchstabenauswahl deaktivieren"

@@ -118,27 +118,27 @@ class Plugin:
         """The Main menu items"""
         return [
             MainMenuItem(
-                "All TV Shows",
+                self.tr(30021),
                 self.router.url(mode="all_shows"),
                 self.router.icon_path(self.bu),
             ),
             MainMenuItem(
-                "TV Shows by Letters",
+                self.tr(30022),
                 self.router.url(mode="shows_by_letters"),
                 self.router.icon_path(self.bu),
             ),
             MainMenuItem(
-                "Videos by Topics",
+                self.tr(30023),
                 self.router.url(mode="videos_by_topic"),
                 self.router.icon_path(self.bu),
             ),
             MainMenuItem(
-                "Trending",
+                self.tr(30024),
                 self.router.url(mode="trending"),
                 self.router.icon_path(self.bu),
             ),
             MainMenuItem(
-                "Search",
+                self.tr(30025),
                 self.router.url(mode="search"),
                 self.router.icon_path(self.bu),
             ),
@@ -212,7 +212,7 @@ class Plugin:
             image_url = show.get("imageUrl", "")
 
             description = show.get("description")
-            if not description:  # sometimes lead contains info
+            if not description:  # sometimes lead contains th description
                 description = show.get("lead", "")
 
             url_args = {
@@ -338,22 +338,22 @@ class Plugin:
         """
         if not search_type:
             self._add_item_to_directory(
-                "Search TV Shows",
+                self.tr(30031),
                 self.router.url(mode="search", **{"type": "tv_shows"}),
                 is_folder=True,
             )
             self._add_item_to_directory(
-                "Search Videos",
+                self.tr(30032),
                 self.router.url(mode="search", **{"type": "videos"}),
                 is_folder=True,
             )
         else:
             if search_type == "tv_shows":
-                search_string = xbmcgui.Dialog().input("Search TV Shows")
+                search_string = xbmcgui.Dialog().input(self.tr(30031))
                 res = self.video_client.get_tv_shows(self.bu, string_filter=search_string)
                 self.tv_shows_menu(res.get("searchResultListShow"))
             elif search_type == "videos":
-                search_string = xbmcgui.Dialog().input("Search Videos")
+                search_string = xbmcgui.Dialog().input(self.tr(30032))
                 res = self.video_client.search_video(self.bu, search_string, page_size=20)
                 for media in res.get("searchResultListMedia"):
                     show = media.get("show")
@@ -420,6 +420,7 @@ class Plugin:
 
     def _add_subtitles(self, listitem, video_id):
         """If subtitles are enable and available, add them to the ListItem"""
+        self.logger.debug(f"Getting subtitles for video {video_id}")
         if to_bool(self.settings.enable_subtitles):
             video_urn = f"urn:{self.bu}:episode:tv:{video_id}"
             resp = self.subs_client.get_subtitles(video_urn)
@@ -527,8 +528,6 @@ class Plugin:
             liz.setArt({"icon": icon_image})
         if subtitles:
             liz.setSubtitles(subtitles)
-
-        self.logger.info(f"URL = {url}")
 
         xbmcplugin.addDirectoryItem(
             self.HANDLE,

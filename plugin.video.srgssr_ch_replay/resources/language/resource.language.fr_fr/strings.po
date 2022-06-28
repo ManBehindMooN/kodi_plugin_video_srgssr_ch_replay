@@ -28,25 +28,41 @@ msgctxt "#30019"
 msgid "# (numbers & special characters)"
 msgstr "# (Nombres et caractères spéciaux)"
 
-msgctxt "#30020"
-msgid "Older episodes (page {0} of {1})"
-msgstr "Épisodes précédents (page {0} sur {1}"
-
 msgctxt "#30021"
-msgid "Search TV shows"
-msgstr "Rechercher une émission"
+msgid "All TV Shows"
+msgstr "Toutes les émissions"
 
 msgctxt "#30022"
-msgid "Enter a TV show name to search for"
-msgstr "Entrer le nom de l'émission à rechercher"
+msgid "TV Shows by Letters"
+msgstr "Émissions par lettre"
+
+msgctxt "#30023"
+msgid "Topics"
+msgstr "Thèmes"
+
+msgctxt "#30024"
+msgid "Trending"
+msgstr "Vidéos Populaires"
+
+msgctxt "#30025"
+msgid "Search"
+msgstr "Recherche"
+
+msgctxt "#30031"
+msgid "Search TV Shows"
+msgstr "Rechercher une émission"
+
+msgctxt "#30032"
+msgid "Search Videos"
+msgstr "Rechercher une vidéo"
 
 msgctxt "#30096"
 msgid "Incorrect '{0} API' credentials"
 msgstr "Identifiants de l'API {0} incorrects. "
 
 msgctxt "#30097"
-msgid "Please check they are correctly entered in the addon settings"
-msgstr "Veuillez contrôler qu'il sont correctement entrés dans les paramètres de l'addon"
+msgid "Please check they are correctly entered in the add-on settings"
+msgstr "Veuillez contrôler qu'il sont correctement entrés dans les paramètres de l'add-on"
 
 msgctxt "#30098"
 msgid "In order to use this add-on a consumer key & secret in your add-on settings must be provided.[CR]See instructions: [B]https://github.com/ManBehindMooN/[CR]kodi_plugin_video_srgssr_ch_replay[/B][CR][CR]Sorry for the inconvenience."
@@ -90,7 +106,7 @@ msgstr "Business Unit par défaut"
 
 msgctxt "#30202"
 msgid "Choose in the Addon"
-msgstr "Sélectionner dans l'Addon"
+msgstr "Sélectionner dans l'Add-on"
 
 msgctxt "#30203"
 msgid "Number of episodes shown per page"
@@ -107,7 +123,3 @@ msgstr "Expérimental"
 msgctxt "#30901"
 msgid "Show inactive TV shows"
 msgstr "Afficher les émissions inactives"
-
-msgctxt "#30902"
-msgid "Disable letter menu"
-msgstr "Désactiver le menu alphabétique"
