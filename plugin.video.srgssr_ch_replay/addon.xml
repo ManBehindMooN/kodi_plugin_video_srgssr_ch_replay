@@ -9,16 +9,12 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-	 <news>[3.0.0] Cloned from "Unofficial SRF Replay" and rebranded
-[3.0.0] Official SRG SSR API implemented 
-[3.0.0] All official TV channels supported
-[3.0.0] SRG SSR user account required
-[3.0.1] Search for TV shows
-[3.0.1] Bug fixes
-[3.0.2] Subtitle can be enabled
-[3.0.3] Inactive TV shows can be included in the alphabetical search (undocumented &amp; experimental)
-[3.0.3] The letter menu can be disabled (undocumented &amp; experimental)
-[3.0.4] Inputstream Adaptive can be activated and is used when available</news>
+	 <news>[NEW] A new menu has been added with more features. Enjoy!
+[NEW] Inputstream Adaptive has been implemented and is enabled by default.
+[NEW] Add-on settings have been overhauled. Have a look!
+[NEW] French translation has been added. Jouir!
+[INFO] This version has been totally overworked for upcoming features. Special thanks to Joachim. Embrace the future!
+[WARN] Favorites from previous versions do not work anymore. Delete and re-add them. Sorry!</news>
 	<assets>
 		<icon>resources/icon.png</icon>
 		<fanart>resources/fanart.png</fanart>
