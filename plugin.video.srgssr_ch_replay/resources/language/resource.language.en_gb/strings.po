@@ -33,11 +33,11 @@ msgid "Older episodes (page {0} of {1})"
 msgstr ""
 
 msgctxt "#30021"
-msgid "All TV Shows"
+msgid "All TV shows"
 msgstr ""
 
 msgctxt "#30022"
-msgid "TV Shows by Letters"
+msgid "TV Shows by letters"
 msgstr ""
 
 msgctxt "#30023"
@@ -53,11 +53,11 @@ msgid "Search"
 msgstr ""
 
 msgctxt "#30031"
-msgid "Search TV Shows"
+msgid "Search TV shows"
 msgstr ""
 
 msgctxt "#30032"
-msgid "Search Videos"
+msgid "Search episodes"
 msgstr ""
 
 msgctxt "#30096"
@@ -67,7 +67,6 @@ msgstr ""
 msgctxt "#30097"
 msgid "Please check they are correctly entered in the add-on settings"
 msgstr ""
-
 
 msgctxt "#30098"
 msgid "In order to use this add-on a consumer key & secret in your add-on settings must be provided.[CR]See instructions: [B]https://github.com/ManBehindMooN/[CR]kodi_plugin_video_srgssr_ch_replay[/B][CR][CR]Sorry for the inconvenience."
@@ -110,7 +109,7 @@ msgid "Default Business Unit"
 msgstr ""
 
 msgctxt "#30202"
-msgid "Choose in the Add-on"
+msgid "Choose in the add-on"
 msgstr ""
 
 msgctxt "#30203"

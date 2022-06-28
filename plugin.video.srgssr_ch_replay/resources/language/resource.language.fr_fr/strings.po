@@ -28,12 +28,16 @@ msgctxt "#30019"
 msgid "# (numbers & special characters)"
 msgstr "# (Nombres et caractères spéciaux)"
 
+msgctxt "#30020"
+msgid "Older episodes (page {0} of {1})"
+msgstr "Émissions plus anciens (page {0} of {1})"
+
 msgctxt "#30021"
-msgid "All TV Shows"
+msgid "All TV shows"
 msgstr "Toutes les émissions"
 
 msgctxt "#30022"
-msgid "TV Shows by Letters"
+msgid "TV Shows by letters"
 msgstr "Émissions par lettre"
 
 msgctxt "#30023"
@@ -49,11 +53,11 @@ msgid "Search"
 msgstr "Recherche"
 
 msgctxt "#30031"
-msgid "Search TV Shows"
+msgid "Search TV shows"
 msgstr "Rechercher une émission"
 
 msgctxt "#30032"
-msgid "Search Videos"
+msgid "Search episodes"
 msgstr "Rechercher une vidéo"
 
 msgctxt "#30096"
@@ -105,7 +109,7 @@ msgid "Default Business Unit"
 msgstr "Business Unit par défaut"
 
 msgctxt "#30202"
-msgid "Choose in the Addon"
+msgid "Choose in the add-on"
 msgstr "Sélectionner dans l'Add-on"
 
 msgctxt "#30203"

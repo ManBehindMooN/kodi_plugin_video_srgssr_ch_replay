@@ -30,35 +30,35 @@ msgstr "# (Nummern & Sonderzeichen)"
 
 msgctxt "#30020"
 msgid "Older episodes (page {0} of {1})"
-msgstr "Ältere Ausstrahlungen (Seite {0} von {1})"
+msgstr "Ältere Folgen (Seite {0} von {1})"
 
 msgctxt "#30021"
-msgid "All TV Shows"
-msgstr "TODO"
+msgid "All TV shows"
+msgstr "Alle Sendungen"
 
 msgctxt "#30022"
-msgid "TV Shows by Letters"
-msgstr "TODO"
+msgid "TV Shows by letters"
+msgstr "Sendungen nach Buchstaben"
 
 msgctxt "#30023"
 msgid "Topics"
-msgstr "TODO"
+msgstr "Nach Thema"
 
 msgctxt "#30024"
 msgid "Trending"
-msgstr "TODO"
+msgstr "Aktuelle Sendungen"
 
 msgctxt "#30025"
 msgid "Search"
-msgstr "TODO"
+msgstr "Suchen"
 
 msgctxt "#30031"
-msgid "Search TV Shows"
-msgstr "TODO"
+msgid "Search TV shows"
+msgstr "Sendungen suchen"
 
 msgctxt "#30032"
-msgid "Search Videos"
-msgstr "TODO"
+msgid "Search episodes"
+msgstr "Folgen suchen"
 
 msgctxt "#30096"
 msgid "Incorrect '{0} API' credentials"
@@ -106,15 +106,15 @@ msgstr "Allgemein"
 
 msgctxt "#30201"
 msgid "Default Business Unit"
-msgstr "TODO"
+msgstr "Standard Business Unit (Kanal)"
 
 msgctxt "#30202"
-msgid "Choose in the Add-on"
-msgstr "TODO"
+msgid "Choose in the add-on"
+msgstr "Im Add-on wählen"
 
 msgctxt "#30203"
 msgid "Number of episodes shown per page"
-msgstr "Abzahl Austrahlungen pro Seite anzeigen"
+msgstr "Abzahl Folgen pro Seite anzeigen"
 
 msgctxt "#30204"
 msgid "Enable Inputstream Adaptive"
