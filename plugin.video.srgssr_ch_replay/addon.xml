@@ -10,7 +10,7 @@
   </extension>
   <extension point="xbmc.addon.metadata">
 	 <news>[NEW] A new menu has been added with more features. Enjoy!
-[NEW] Inputstream Adaptive has been implemented and is enabled by default.
+[NEW] InputStream Adaptive has been implemented and is enabled by default.
 [NEW] Add-on settings have been overhauled. Have a look!
 [NEW] French translation has been added. Jouir!
 [INFO] This version has been totally overworked for upcoming features. Special thanks to Joachim. Embrace the future!

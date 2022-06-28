@@ -117,7 +117,7 @@ msgid "Number of episodes shown per page"
 msgstr "Abzahl Folgen pro Seite anzeigen"
 
 msgctxt "#30204"
-msgid "Enable Inputstream Adaptive"
+msgid "Enable InputStream Adaptive"
 msgstr "Inputstream Adaptive einschalten"
 
 msgctxt "#30900"
