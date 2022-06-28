@@ -1,6 +1,21 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE files
 /.project
 /.pydevproject
-/.settings/	
-/plugin.video*.zip
 /*.iml
 /.idea
+
+# Environments
+.env
+.venv
+env/
+venv/
+/.settings/	
+
+# Releases
+/plugin.video*.zip
