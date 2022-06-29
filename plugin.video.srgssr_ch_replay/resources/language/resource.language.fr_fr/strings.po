@@ -30,7 +30,7 @@ msgstr "# (Nombres et caractères spéciaux)"
 
 msgctxt "#30020"
 msgid "Older episodes (page {0} of {1})"
-msgstr "Émissions plus anciens (page {0} of {1})"
+msgstr "Épisodes plus anciens (page {0} of {1})"
 
 msgctxt "#30021"
 msgid "All TV shows"
@@ -58,7 +58,7 @@ msgstr "Rechercher une émission"
 
 msgctxt "#30032"
 msgid "Search episodes"
-msgstr "Rechercher une vidéo"
+msgstr "Rechercher un épisode"
 
 msgctxt "#30096"
 msgid "Incorrect '{0} API' credentials"
@@ -110,7 +110,7 @@ msgstr "Business Unit par défaut"
 
 msgctxt "#30202"
 msgid "Choose in the add-on"
-msgstr "Sélectionner dans l'Add-on"
+msgstr "Sélectionner dans l'add-on"
 
 msgctxt "#30203"
 msgid "Number of episodes shown per page"
