@@ -29,7 +29,7 @@ msgid "# (numbers & special characters)"
 msgstr "# (Nombres et caractères spéciaux)"
 
 msgctxt "#30020"
-msgid "Older episodes (page {0} of {1})"
+msgid "Next page {0} of {1}"
 msgstr "Épisodes plus anciens (page {0} of {1})"
 
 msgctxt "#30021"
@@ -57,7 +57,7 @@ msgid "Search TV shows"
 msgstr "Rechercher une émission"
 
 msgctxt "#30032"
-msgid "Search episodes"
+msgid "Search broadcasts"
 msgstr "Rechercher un épisode"
 
 msgctxt "#30096"
@@ -109,11 +109,11 @@ msgid "Default Business Unit"
 msgstr "Business Unit par défaut"
 
 msgctxt "#30202"
-msgid "Choose in the add-on"
+msgid "All"
 msgstr "Sélectionner dans l'add-on"
 
 msgctxt "#30203"
-msgid "Number of episodes shown per page"
+msgid "Number of broadcasts per page"
 msgstr "Nombre d'épisodes affichés par page"
 
 msgctxt "#30204"
