@@ -22,7 +22,8 @@ Due to all the overwork started in version 3.0.4 the old favorites do not work a
 As InputStream Adaptive has been implemented and is being used by default, your setup might not take the highest available stream resolution. There are two easy solutions:
 * In the add-on settings the InputStream Adaptive can be disabled and the previous behavior (automatic highest resolution selection) should be in place again. 
 * In the settings from the InputStream Adaptive the manual stream selection can be enabled with the advantage to change the stream resolution over the Kodi video settings while streaming.
-![InputStream Adaptive Settings](pictures/InputStreamAdaptiveSettings.png) 
+
+  ![InputStream Adaptive Settings](pictures/InputStreamAdaptiveSettings.png) 
 
 
 ## Add-on Usage
