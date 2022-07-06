@@ -17,7 +17,7 @@ If you experience any problems or you have any suggestions, then please get in t
 #### Subtitles in ttml format (3.0.2+)
 TV shows that only provide subtitles in the ttml format (mainly the RTS channel) do not work at all as this format is not (yet) supported by Kodi. If you are confronted by that issue and need a solution, let us know.
 #### Old favorites do not work anymore (3.0.4+)
-Due to all the overwork started in version 3.0.4 the old favorites do not work anymore. Please delete them and re-add them. Sorry for the inconvenience.
+Due to all the refactoring started in version 3.0.4 the old favorites do not work anymore. Please delete them and re-add them. Sorry for the inconvenience.
 #### Stream quality is lower than before (3.0.4+)
 As InputStream Adaptive has been implemented and is being used by default, your setup might not take the highest available stream resolution. There are two easy solutions:
 * In the add-on settings the InputStream Adaptive can be disabled and the previous behavior (automatic highest resolution selection) should be in place again. 
