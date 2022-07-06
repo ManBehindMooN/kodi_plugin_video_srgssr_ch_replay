@@ -29,8 +29,8 @@ msgid "# (numbers & special characters)"
 msgstr "# (Nummern & Sonderzeichen)"
 
 msgctxt "#30020"
-msgid "Next page {0} of {1}"
-msgstr "Nächste Seite {0} von {1}"
+msgid "Page {0} of {1} >> more results"
+msgstr "Seite {0} von {1} >> mehr Resultate"
 
 msgctxt "#30021"
 msgid "All TV shows"

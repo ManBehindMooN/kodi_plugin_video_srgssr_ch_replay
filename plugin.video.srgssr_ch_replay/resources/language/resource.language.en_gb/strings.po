@@ -29,7 +29,7 @@ msgid "# (numbers & special characters)"
 msgstr ""
 
 msgctxt "#30020"
-msgid "Next page {0} of {1}"
+msgid "Page {0} of {1} >> more results"
 msgstr ""
 
 msgctxt "#30021"

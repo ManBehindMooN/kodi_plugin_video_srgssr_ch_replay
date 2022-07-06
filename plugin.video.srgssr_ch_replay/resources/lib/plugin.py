@@ -480,7 +480,7 @@ class Plugin:
         next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
         next_page = current_page + 1
 
-        url_args.update({"next_page_id": next_page_id, "current_page": next_page})
+        url_args.update({"next_page_id": next_page_id, "current_page": next_page, "number_of_episodes": number_of_episodes })
 
         self._add_item_to_directory(
             liz_name,
