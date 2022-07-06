@@ -36,11 +36,11 @@ class SRGSSRApiClient:
         :param verify: If true, server's SSL certificate is verified
         """
 
-        if not creds["key"] or not creds["secret"]:
+        if not creds.get("key") or not creds.get("secret"):
             raise ValueError("SRGSSRApiClient creds must contain a 'key' and 'secret' fields")
 
         self._base_url = base_url
-        self._basic_auth = HTTPBasicAuth(creds["key"], creds["secret"])
+        self._basic_auth = HTTPBasicAuth(creds.get("key"), creds.get("secret"))
         self._verify = verify
         self._plugin = plugin
         self._logger = self._plugin.logger
