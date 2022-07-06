@@ -48,7 +48,7 @@ class Router:
             elif mode == "list_videos_by_topic":
                 self.plugin.list_videos_by_topic(
                     kwargs["topic_id"],
-                    int(kwargs.get("current_page", 0)),
+                    int(kwargs.get("current_page", 1)),
                     int(kwargs.get("number_of_episodes", 0)),
                     kwargs.get("next_page_id", ""),
                 )
@@ -56,12 +56,12 @@ class Router:
                 self.plugin.search_menu(kwargs.get("type", ""))
             elif mode == "trending":
                 self.plugin.trending(
-                    int(kwargs.get("current_page", 0)), kwargs.get("next_page_id", "")
+                    int(kwargs.get("current_page", 1)), kwargs.get("next_page_id", "")
                 )
             elif mode == "list_episodes_by_show":
                 self.plugin.list_episodes_by_show(
                     kwargs["tv_show_id"],
-                    int(kwargs.get("current_page", 0)),
+                    int(kwargs.get("current_page", 1)),
                     int(kwargs.get("number_of_episodes", 0)),
                     kwargs.get("next_page_id", ""),
                 )
