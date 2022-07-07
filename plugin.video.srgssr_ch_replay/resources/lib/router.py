@@ -14,8 +14,7 @@ class Router:
         """Constructs the plugin's URL"""
         if not bu:
             bu = self.plugin.bu
-        path = f"{bu}/{mode}"
-        return f"{self.plugin.ADDON_URL}/{path}?{urlencode(kwargs)}"
+        return f"{self.plugin.ADDON_URL}?bu={bu}&mode={mode}&{urlencode(kwargs)}"
 
     def icon_path(self, name):
         return f"{self.plugin.path}/resources/media/{name}.png"
@@ -26,9 +25,9 @@ class Router:
         :param kwargs: url params
         """
         self.plugin.logger.debug(f"Route dispatcher: path={path}, kwargs: {kwargs}")
-        if self._bu(path):
-            self.plugin.bu = self._bu(path)
-        mode = self._mode(path)
+        if kwargs.get("bu"):
+            self.plugin.bu = kwargs.get("bu")
+        mode = kwargs.get("mode", "")
         self.plugin.logger.debug(f"Mode: {mode}, BU:{self.plugin.bu}")
 
         if not self.plugin.bu:
@@ -69,12 +68,3 @@ class Router:
                 video_id = kwargs.get("video_id", "")
                 media_id = kwargs.get("media_id", "")
                 self.plugin.play_video(video_id, media_id)
-
-    def _bu(self, path: str):
-        """Gets the channel from the path"""
-        return path.split("/")[1]
-
-    def _mode(self, path: str):
-        """Gets the mode (choosed submenu) from the path"""
-        parts = path.split("/")
-        return parts[2] if len(parts) >= 3 else ""
