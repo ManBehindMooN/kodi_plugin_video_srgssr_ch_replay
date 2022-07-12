@@ -350,16 +350,22 @@ class Plugin:
         else:
             if search_type == "tv_shows":
                 search_string = xbmcgui.Dialog().input(self.tr(30031))
-                res = self.video_client.get_tv_shows(self.bu, string_filter=search_string)
-                self.tv_shows_menu(res.get("searchResultListShow"))
+                if search_string != '':
+                    res = self.video_client.get_tv_shows(self.bu, string_filter=search_string)
+                    self.tv_shows_menu(res.get("searchResultListShow"))
+                else:
+                    return
             elif search_type == "videos":
                 search_string = xbmcgui.Dialog().input(self.tr(30032))
-                res = self.video_client.search_video(self.bu, search_string, page_size=20)
-                for media in res.get("searchResultListMedia"):
-                    show = media.get("show")
-                    episode = media.get("episode")
-                    self._add_video_to_directory(show, episode, media)
-                # TODO: Add next page
+                if search_string != '':
+                    res = self.video_client.search_video(self.bu, search_string, page_size=20)
+                    for media in res.get("searchResultListMedia"):
+                        show = media.get("show")
+                        episode = media.get("episode")
+                        self._add_video_to_directory(show, episode, media)
+                        # TODO: Add next page
+                else:
+                    return
 
         xbmcplugin.endOfDirectory(self.HANDLE)
 
