@@ -3,7 +3,7 @@ import os
 from string import ascii_lowercase
 from collections import namedtuple
 from typing import Tuple
-from urllib.parse import parse_qsl, quote_plus, urlparse, urlsplit
+from urllib.parse import parse_qsl, quote_plus, urlparse
 import requests
 
 import xbmc
@@ -150,9 +150,8 @@ class Plugin:
         self.logger.debug(
             f"Argv[0]: {sys.argv[0]} ; Argv[1]: {sys.argv[1]} ; Argv[2]: {sys.argv[2]} ; "
         )
-        path = urlsplit(sys.argv[0]).path or "/"
         kwargs = dict(parse_qsl(sys.argv[2].lstrip("?")))
-        self.router.dispatch(path, **kwargs)
+        self.router.dispatch(**kwargs)
         self.logger.debug("End of SRGSSR plugin")
 
     def bu_menu(self):

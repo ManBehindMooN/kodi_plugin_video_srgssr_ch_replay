@@ -19,12 +19,11 @@ class Router:
     def icon_path(self, name):
         return f"{self.plugin.path}/resources/media/{name}.png"
 
-    def dispatch(self, path: str, **kwargs):
+    def dispatch(self, **kwargs):
         """Dispatch to the plugin menu
-        :param path: url path
         :param kwargs: url params
         """
-        self.plugin.logger.debug(f"Route dispatcher: path={path}, kwargs: {kwargs}")
+        self.plugin.logger.debug(f"Route dispatcher: kwargs: {kwargs}")
         if kwargs.get("bu"):
             self.plugin.bu = kwargs.get("bu")
         mode = kwargs.get("mode", "")
