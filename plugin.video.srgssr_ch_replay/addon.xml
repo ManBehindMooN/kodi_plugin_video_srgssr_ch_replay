@@ -20,11 +20,11 @@
 		<fanart>resources/fanart.png</fanart>
 		<banner>resources/banner.png</banner>
 		<clearlogo>resources/clearlogo.png</clearlogo>
-		<screenshot>resources/screenshot-01.jpg</screenshot>
-		<screenshot>resources/screenshot-02.jpg</screenshot>
-		<screenshot>resources/screenshot-03.jpg</screenshot>
-		<screenshot>resources/screenshot-04.jpg</screenshot>
-		<screenshot>resources/screenshot-05.jpg</screenshot>
+		<screenshot>resources/screenshots/screenshot-01.jpg</screenshot>
+		<screenshot>resources/screenshots/screenshot-02.jpg</screenshot>
+		<screenshot>resources/screenshots/screenshot-03.jpg</screenshot>
+		<screenshot>resources/screenshots/screenshot-04.jpg</screenshot>
+		<screenshot>resources/screenshots/screenshot-05.jpg</screenshot>
 	</assets>
     <summary lang="en_GB">The unofficial SRG SSR Replay add-on lists and plays TV shows from the channels SRF, SwissInfo, RTS, RSI and RTR.</summary>
     <description lang="en_GB">The unofficial SRG SSR Replay add-on lists recorded shows from the SRG SSR over their provided API. The channels SRF, SwissInfo, RTS, RSI and RTR are supported. All shows are legally owned by the SRG SSR and will only be streamed over this add-on. Some shows might be regional locked and can only be played by Swiss IP addresses.
