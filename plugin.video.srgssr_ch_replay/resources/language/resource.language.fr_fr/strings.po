@@ -118,7 +118,7 @@ msgstr "Nombre d'épisodes affichés par page"
 
 msgctxt "#30204"
 msgid "Enable InputStream Adaptive"
-msgstr "Activer l'Inputstrea Adaptive"
+msgstr "Activer l'Inputstream Adaptive"
 
 msgctxt "#30900"
 msgid "Experimental"
