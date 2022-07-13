@@ -481,7 +481,7 @@ class Plugin:
         number_of_pages = self._compute_number_of_pages(
             number_of_episodes_per_page, number_of_episodes
         )
-        liz_name = self.tr(30020).format(current_page, number_of_pages or "?")
+        liz_name = self.tr(30020).format(current_page, f"/{number_of_pages}" if number_of_pages else "")
         next_page_id = dict(parse_qsl(urlparse(next_page_url).query)).get("next")
         next_page = current_page + 1
 
