@@ -30,7 +30,7 @@ msgstr "# (Nombres et caractères spéciaux)"
 
 msgctxt "#30020"
 msgid "Page {0}{1} >> more results"
-msgstr "Épisodes plus anciens (page {0}{1})"
+msgstr "Page {0}{1} >> plus de résultats"
 
 msgctxt "#30021"
 msgid "All TV shows"
@@ -110,7 +110,7 @@ msgstr "Business Unit par défaut"
 
 msgctxt "#30202"
 msgid "All"
-msgstr "Sélectionner dans l'add-on"
+msgstr "Tout"
 
 msgctxt "#30203"
 msgid "Number of broadcasts per page"
