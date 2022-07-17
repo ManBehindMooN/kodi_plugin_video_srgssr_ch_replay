@@ -59,13 +59,7 @@ class Plugin:
 
     def _create_work_folder(self):
         """Creating the addon work folder if it doesn't exist"""
-        try:
-            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo("profile")).decode(
-                "utf-8"
-            )
-        except AttributeError:
-            userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo("profile"))
-
+        userdata_path = xbmcvfs.translatePath(self.ADDON.getAddonInfo("profile"))
         if not os.path.isdir(userdata_path):
             os.mkdir(userdata_path)
 
