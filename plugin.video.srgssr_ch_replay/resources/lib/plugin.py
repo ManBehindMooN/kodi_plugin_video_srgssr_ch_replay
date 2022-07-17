@@ -442,7 +442,7 @@ class Plugin:
             "media_id": media.get("id"),
         }
 
-        vid_name = episode.get("title", "") + " - " + media.get("title", "")
+        vid_name = episode.get("title", "") + " - " + media.get("title", "") if episode.get("title", "") != media.get("title", "") else episode.get("title", "")
         vid_desc = media.get("description", "")
         duration = int(media.get("duration", 0) // 1000)
 
