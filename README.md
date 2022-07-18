@@ -2,7 +2,7 @@
 # <img src="plugin.video.srgssr_ch_replay/resources/icon.png" width="75" height="75" /> Unofficial SRG SSR Replay (another official Kodi add-on) 
 
 ## Add-on description
-The "Unofficial SRG SSR Replay" add-on implements the new [SRG SSR API](https://developer.srgssr.ch/apis) in order to support more channels and upcoming features. Right now all the official channels (SRF, SRF Info, RTS, RSI and RTR) are supported and these TV shows can be listed and streamed. Some shows might be regional locked and can only be played by Swiss IP addresses.
+The "Unofficial SRG SSR Replay" add-on implements the new [SRG SSR API](https://developer.srgssr.ch/apis) in order to support more channels and upcoming features. Right now all the official channels (SRF, SwissInfo, RTS, RSI and RTR) are supported and these TV shows can be listed and streamed. Some shows might be regional locked and can only be played by Swiss IP addresses.
 
 Since version 3.0.0 the add-on is in the official [Kodi 19 (Matrix) repository](https://github.com/xbmc/repo-plugins/tree/matrix/plugin.video.srgssr_ch_replay) / [Kodi Add-on Page](https://kodi.tv/addons/matrix/plugin.video.srgssr_ch_replay).
 
@@ -14,28 +14,38 @@ If you experience any problems or you have any suggestions, then please get in t
 
 ### Known issues
 
-* **Subtitles in ttml format**: TV shows that only provide subtitles in the ttml format (mainly the RTS channel) do not work at all as this format is not (yet) supported by Kodi. If you are confronted by that issue and need a solution, let us know.
+#### Subtitles in ttml format (3.0.2+)
+TV shows that only provide subtitles in the ttml format (mainly the RTS channel) do not work at all as this format is not (yet) supported by Kodi. If you are confronted by that issue and need a solution, let us know.
+#### Old favorites do not work anymore (3.1.0+)
+Due to all the refactoring started in version 3.1.0 the old favorites do not work anymore. Please delete them and re-add them. Sorry for the inconvenience.
+#### Stream quality is lower than before (3.1.0+)
+As InputStream Adaptive has been implemented and is being used by default, your setup might not take the highest available stream resolution. There are two easy solutions:
+* In the add-on settings the InputStream Adaptive can be disabled and the previous behavior (automatic highest resolution selection) should be in place again. 
+* In the settings from the InputStream Adaptive the manual stream selection can be enabled with the advantage to change the stream resolution over the Kodi video settings while streaming.
+
+  ![InputStream Adaptive Settings](pictures/InputStreamAdaptiveSettings.png) 
+
 
 ## Add-on Usage
 The add-on is self-explanatory but it can be used most efficiently in combination with these recommendations.
 
-### Search TV shows
-A TV show can be found by selecting a a predefined search query which is the first letter of the show. Nothing news worthy so far. Unfortunately not all TV shows are listed specially the discontinued ones. These TV shows can still be found and watched if you select the "Search TV shows" entry at the end of the predefined queries. 
-
-![Search TV shows](pictures/usage4.png)
+### Search TV shows or episodes
+A TV show can be found by selecting a predefined search query. Nothing news worthy so far. Unfortunately not all TV shows are listed specially the discontinued ones. These TV shows can still be found and watched if you select the "Search TV shows" entry.
 
 It is recommended to use at least two letters. As an example if the aim is to find a show named "26 minutes" then just search with "26" or "min" or even "inu" and then press the OK button (unless you want to cancel and make angels cry :-|)
 
 ![Search dialog](pictures/usage5.png)
 
+The same is true to find an old episode somewhere in a large list. It's easier to find these episodes with the "Search episodes" entry.
+
 As the results may vary you might find old stuff you were not even aware of its existence. Have fun.
 
 ### Favorites
-When all the TV Shows are listed, just select your favorite show and open the Kodi context menu (press "c" on your keyboard) and select "Add to favorites".
+When TV Shows or episodes are listed, just select your favorite show or episode and open the Kodi context menu (press "c" on your keyboard) and select "Add to favorites".
 
 ![Select favorites](pictures/usage1.png)
 
-The TV show just appears and the Kodi favorite menu and can be selected from there without going through the whole list every time.
+The TV show or episode just appears and the Kodi favorite menu and can be selected from there without going through the whole list every time.
 
 ![Select favorites](pictures/usage2.png)
 
